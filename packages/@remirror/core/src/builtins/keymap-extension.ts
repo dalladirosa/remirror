@@ -119,30 +119,34 @@ export class KeymapExtension extends PlainExtension<KeymapOptions> {
   #extraKeyBindings: PrioritizedKeyBindings[] = [];
 
   /**
-   * The keymap as a plugin.
-   */
-  private keymap!: ProsemirrorPlugin;
-
-  /**
    * This adds the `createKeymap` method functionality to all extensions.
    */
   onCreate(): void {
     this.store.setExtensionStore('rebuildKeymap', this.rebuildKeymap);
-    this.loopExtensions();
-    this.store.addPlugins(this.keymap);
+  }
+
+  /** Add the created keymap to the available plugins. */
+  createExternalPlugins(): ProsemirrorPlugin[] {
+    if (
+      // The user doesn't want any keymaps in the editor so don't add the keymap
+      // handler.
+      this.store.managerSettings.exclude?.keymap
+    ) {
+      return [];
+    }
+
+    return [this.generateKeymap()];
   }
 
   /**
    * Updates the stored keymap plugin on this extension.
    */
-  private loopExtensions() {
+  private generateKeymap() {
     const extensionKeymaps: PrioritizedKeyBindings[] = [];
 
     for (const extension of this.store.extensions) {
       // Ignore this extension when.
       if (
-        // The user doesn't want any keymaps in the editor.
-        this.store.managerSettings.exclude?.keymap ||
         // The extension doesn't have the `createKeymap` method.
         !extension.createKeymap ||
         // The extension was configured to ignore the keymap.
@@ -158,7 +162,7 @@ export class KeymapExtension extends PlainExtension<KeymapOptions> {
     // those implemented by extensions.
     const sortedKeymaps = this.sortKeymaps([...this.#extraKeyBindings, ...extensionKeymaps]);
     const mappedCommands = mergeProsemirrorKeyBindings(sortedKeymaps);
-    this.keymap = keymap(mappedCommands);
+    return keymap(mappedCommands);
   }
 
   /**
@@ -169,11 +173,7 @@ export class KeymapExtension extends PlainExtension<KeymapOptions> {
    * 3. Update the plugins used in the state (triggers an editor update).
    */
   private readonly rebuildKeymap = () => {
-    const previousKeymap = this.keymap;
-
-    this.loopExtensions();
-    this.store.replacePlugin(previousKeymap, this.keymap);
-    this.store.reconfigureStatePlugins();
+    this.store.updateExtensionPlugins(this);
   };
 
   /**
@@ -408,7 +408,8 @@ declare global {
   namespace Remirror {
     interface ExcludeOptions {
       /**
-       * Whether to exclude the created keymap.
+       * Whether to exclude keybindings support. This is not a recommended
+       * action and can break functionality.
        *
        * @default undefined
        */

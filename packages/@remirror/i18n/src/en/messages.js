@@ -1,3 +1,1 @@
-/*eslint-disable*/ module.exports = {
-  messages: { 'user.mention.avatar.alt': ['Avatar for ', ['name']] },
-};
+/*eslint-disable*/module.exports={messages:{"bold.menu.icon.label":"Bold","image.menu.icon.label":"Image","italic.menu.icon.label":"Italic","static-menu.label":"Static menu"}};

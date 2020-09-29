@@ -10,12 +10,13 @@
       "snapshot-diff"
     ],
     "noEmit": true,
-    "importsNotUsedAsValues": "error",
+    "importsNotUsedAsValues": "remove",
     "skipLibCheck": true,
     "plugins": [
       { "name": "typescript-snapshots-plugin" },
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["packages/**/src", "global.d.ts"]
+  "include": ["packages/*/src", "packages/@remirror/*/src", "global.d.ts"],
+  "exclude": ["packages/@remirror/svelte", "**/node_modules/**"]
 }

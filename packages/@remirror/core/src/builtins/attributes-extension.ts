@@ -1,8 +1,7 @@
 import { bool, object } from '@remirror/core-helpers';
 import type { ProsemirrorAttributes } from '@remirror/core-types';
 
-import { PlainExtension } from '../extension';
-import type { AnyCombinedUnion } from '../preset';
+import { AnyExtension, PlainExtension } from '../extension';
 
 /**
  * This extension allows others extension to add the `createAttributes` method
@@ -43,17 +42,20 @@ export class AttributesExtension extends PlainExtension {
   };
 
   private transformAttributes() {
-    // Reset this attributes
-    this.#attributeList = [];
     this.#attributeObject = object();
 
-    extensionLoop: for (const extension of this.store.extensions) {
-      if (
-        !extension.createAttributes ||
-        this.store.managerSettings.exclude?.attributes ||
-        extension.options.exclude?.attributes
-      ) {
-        continue extensionLoop;
+    // Exit early when the manager excludes these settings.
+    if (this.store.managerSettings.exclude?.attributes) {
+      this.store.setStoreKey('attributes', this.#attributeObject);
+      return;
+    }
+
+    // Reset this attributes
+    this.#attributeList = [];
+
+    for (const extension of this.store.extensions) {
+      if (!extension.createAttributes || extension.options.exclude?.attributes) {
+        continue;
       }
 
       // Inserted at the start of the list so that when combining the full
@@ -79,7 +81,7 @@ export class AttributesExtension extends PlainExtension {
 
 declare global {
   namespace Remirror {
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * The attributes to be added to the prosemirror editor.
        */

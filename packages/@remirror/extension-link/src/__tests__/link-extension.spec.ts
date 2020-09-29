@@ -1,8 +1,8 @@
 import { pmBuild } from 'jest-prosemirror';
 import { extensionValidityTest, renderEditor } from 'jest-remirror';
+import { createCoreManager } from 'remirror/extensions';
 
-import { fromHtml, toHtml } from '@remirror/core';
-import { createCoreManager } from '@remirror/testing';
+import { htmlToProsemirrorNode, prosemirrorNodeToHtml } from '@remirror/core';
 
 import { LinkExtension, LinkOptions } from '..';
 
@@ -24,13 +24,13 @@ describe('schema', () => {
   });
 
   it('uses the href', () => {
-    expect(toHtml({ node: p(a('link')), schema })).toBe(
+    expect(prosemirrorNodeToHtml({ node: p(a('link')), schema })).toBe(
       `<p><a href="${href}" rel="noopener noreferrer nofollow">link</a></p>`,
     );
   });
 
   it('can parse content', () => {
-    const node = fromHtml({
+    const node = htmlToProsemirrorNode({
       content: `<p><a href="${href}">link</a></p>`,
       schema,
     });
@@ -84,7 +84,7 @@ describe('schema', () => {
         a: { markType: 'link', href, custom, title },
       });
 
-      const node = fromHtml({
+      const node = htmlToProsemirrorNode({
         content: `<p><a href="${href}" title="${title}" data-custom="${custom}">link</a></p>`,
         schema,
       });

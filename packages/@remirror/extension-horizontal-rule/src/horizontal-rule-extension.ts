@@ -37,7 +37,9 @@ export class HorizontalRuleExtension extends NodeExtension<HorizontalRuleOptions
     return 'horizontalRule' as const;
   }
 
-  readonly tags = [ExtensionTag.BlockNode];
+  createTags() {
+    return [ExtensionTag.BlockNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {

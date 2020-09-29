@@ -15,10 +15,11 @@ import {
   tr as row,
 } from 'jest-prosemirror';
 import { renderEditor } from 'jest-remirror';
+import { BoldExtension, HeadingExtension } from 'remirror/extensions';
+import { createCoreManager } from 'remirror/extensions';
 
 import { omit } from '@remirror/core-helpers';
 import { NodeSelection, Selection, TextSelection } from '@remirror/pm/state';
-import { BoldExtension, createCoreManager, HeadingExtension } from '@remirror/testing';
 
 import {
   cloneTransaction,

@@ -9,15 +9,15 @@ import { includes, invariant, object, values } from '@remirror/core-helpers';
 import { extensionDecorator } from '../decorators';
 import {
   AnyExtension,
+  GetExtensions,
   GetMarkNameUnion,
   GetNodeNameUnion,
-  GetPlainNames,
+  GetPlainNameUnion,
   isMarkExtension,
   isNodeExtension,
   isPlainExtension,
   PlainExtension,
 } from '../extension';
-import type { AnyCombinedUnion } from '../preset';
 import type { GetNameUnion } from '../types';
 
 /**
@@ -101,25 +101,18 @@ export class TagsExtension extends PlainExtension {
    * Update the tags object for each extension.
    */
   private updateTagForExtension(extension: AnyExtension) {
-    if (
-      !extension.tags ||
-      this.store.managerSettings.exclude?.tags ||
-      extension.options.exclude?.tags
-    ) {
-      // Exit early when the editor configuration requires it.
-      return;
-    }
-
-    const allTags = [
-      ...extension.tags,
+    const allTags = new Set([
+      // TODO remove `extension.tags` once all tags have been moved over to `createTags`
+      ...(extension.tags ?? []),
+      ...(extension.createTags?.() ?? []),
       ...(extension.options.extraTags ?? []),
       ...(this.store.managerSettings.extraTags?.[extension.name] ?? []),
-    ];
+    ]);
 
     for (const tag of allTags) {
       invariant(isExtensionTag(tag), {
         code: ErrorConstant.EXTENSION,
-        message: `The tag provided by the extension: ${extension.constructorName} is not supported by the editor. To add new tags you can use the 'mutateTag' method.`,
+        message: `The tag provided by the extension: ${extension.constructorName} is not supported by the editor. To add custom tags you can use the 'mutateTag' method.`,
       });
 
       // Add tags to the combined tags stored here.
@@ -137,6 +130,9 @@ export class TagsExtension extends PlainExtension {
         this.#nodeTags[tag].push(extension.name);
       }
     }
+
+    // All tags available.
+    extension.tags = [...allTags];
   }
 }
 
@@ -177,6 +173,16 @@ declare global {
 
     interface BaseExtension {
       /**
+       * The generated tags for this extension are added here. Do not add this
+       * property to your extensions as it will be overridden.
+       */
+      tags: ExtensionTagType[];
+    }
+
+    interface ExtensionCreatorMethods {
+      /**
+       * Dynamically create tags for the extension.
+       *
        * Tags are a helpful tool for categorizing the behavior of an extension.
        * This behavior is later grouped in the `Manager` and passed to the
        * `extensionStore`. Tags can be used by commands that need to remove all
@@ -189,40 +195,31 @@ declare global {
        * group when they are found there.
        *
        * There are internally defined tags but it's also possible to define any
-       * custom string as a tag. See {@link ExtensionTag}
+       * custom string as a tag. See [[`ExtensionTag`]].
        */
-      tags?: ExtensionTagType[];
+      createTags?(): ExtensionTagType[];
     }
 
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * All the tags provided by the configured extensions.
        */
-      tags: Readonly<CombinedTags<GetNameUnion<Combined>>>;
+      tags: Readonly<CombinedTags<GetNameUnion<GetExtensions<ExtensionUnion>>>>;
 
       /**
        * All the plain extension tags provided for the editor.
        */
-      plainTags: Readonly<CombinedTags<GetPlainNames<Combined>>>;
+      plainTags: Readonly<CombinedTags<GetPlainNameUnion<GetExtensions<ExtensionUnion>>>>;
 
       /**
        * All the node extension tags provided for the editor.
        */
-      nodeTags: Readonly<CombinedTags<GetNodeNameUnion<Combined>>>;
+      nodeTags: Readonly<CombinedTags<GetNodeNameUnion<GetExtensions<ExtensionUnion>>>>;
 
       /**
        * All the mark extension tags provided for the editor.
        */
-      markTags: Readonly<CombinedTags<GetMarkNameUnion<Combined>>>;
-    }
-
-    interface ExcludeOptions {
-      /**
-       * Whether to exclude the tags plugin for this extension.
-       *
-       * @default undefined
-       */
-      tags?: boolean;
+      markTags: Readonly<CombinedTags<GetMarkNameUnion<GetExtensions<ExtensionUnion>>>>;
     }
 
     interface ExtensionStore {

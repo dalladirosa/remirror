@@ -1,6 +1,6 @@
 import {
   AddCustomHandler,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   CustomHandler,
   debounce,
   extensionDecorator,
@@ -94,7 +94,7 @@ export class PositionerExtension extends PlainExtension<PositionerOptions> {
     this.positioner(parameter);
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       props: {
         handleDOMEvents: {

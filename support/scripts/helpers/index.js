@@ -2,9 +2,9 @@ const { resolve, join, relative } = require('path');
 const { readPreState } = require('@changesets/pre');
 const readChangesets = require('@changesets/read').default;
 const { getPackages } = require('@manypkg/get-packages');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const rm = require('util').promisify(require('rimraf'));
+const { promisify } = require('util');
+const exec = promisify(require('child_process').exec);
+const rm = promisify(require('rimraf'));
 
 const separator = '__';
 
@@ -114,7 +114,6 @@ const getTypedPackagesWithPath = async (relative = false) => {
  */
 
 /**
- * @param { string } [cwd]
  * @returns { Promise<ChangesetState> }
  */
 async function readChangesetState(cwd = process.cwd()) {
@@ -140,9 +139,7 @@ module.exports = {
   formatFiles,
   baseDir,
   getRelativePathFromJson,
-  unmangleScopedPackage,
-  mangleScopedPackageName,
-  exec,
   rm,
+  exec,
   readChangesetState,
 };

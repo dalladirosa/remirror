@@ -3,7 +3,7 @@ import { cx } from 'linaria';
 
 import {
   CommandFunction,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   DispatchFunction,
   extensionDecorator,
   findMatches,
@@ -160,7 +160,7 @@ export class SearchExtension extends PlainExtension<SearchOptions> {
   /**
    * This plugin is responsible for adding something decorations to the
    */
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       state: {
         init() {

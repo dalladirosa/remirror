@@ -1,7 +1,7 @@
 import { css } from 'linaria';
 
 import {
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   extensionDecorator,
   isDocNodeEmpty,
   ManagerPhase,
@@ -67,7 +67,7 @@ export class PlaceholderExtension extends PlainExtension<PlaceholderOptions> {
     return { 'aria-placeholder': this.options.placeholder };
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       state: {
         init: (_, state): PlaceholderPluginState => ({
@@ -86,7 +86,7 @@ export class PlaceholderExtension extends PlainExtension<PlaceholderOptions> {
     };
   }
 
-  onSetOptions(parameter: OnSetOptionsParameter<PlaceholderOptions>): void {
+  protected onSetOptions(parameter: OnSetOptionsParameter<PlaceholderOptions>): void {
     const { changes } = parameter;
 
     if (changes.placeholder.changed && this.store.phase >= ManagerPhase.EditorView) {

@@ -11,17 +11,17 @@ import {
   tableRow,
 } from 'jest-prosemirror';
 import { renderEditor } from 'jest-remirror';
+import {
+  BlockquoteExtension,
+  BoldExtension,
+  HeadingExtension,
+  ItalicExtension,
+} from 'remirror/extensions';
 
 import { object } from '@remirror/core-helpers';
 import { Mark } from '@remirror/pm/model';
 import { TextSelection } from '@remirror/pm/state';
-import {
-  BlockquoteExtension,
-  BoldExtension,
-  docNodeBasicJSON,
-  HeadingExtension,
-  ItalicExtension,
-} from '@remirror/testing';
+import { docNodeBasicJSON } from '@remirror/testing';
 
 import {
   areSchemasCompatible,
@@ -31,7 +31,6 @@ import {
   canInsertNode,
   createDocumentNode,
   endPositionOfParent,
-  fromHtml,
   getChangedNodeRanges,
   getCursor,
   getInvalidContent,
@@ -40,6 +39,7 @@ import {
   getNearestNonTextElement,
   getRemirrorJSON,
   getSelectedWord,
+  htmlToProsemirrorNode,
   isDocNode,
   isDocNodeEmpty,
   isElementDomNode,
@@ -51,9 +51,9 @@ import {
   isSelection,
   isTextDomNode,
   isTextSelection,
+  prosemirrorNodeToDom,
+  prosemirrorNodeToHtml,
   startPositionOfParent,
-  toDom,
-  toHtml,
 } from '../core-utils';
 
 describe('isEmptyBlockNode', () => {
@@ -459,7 +459,7 @@ describe('createDocumentNode', () => {
 
   it('creates content via an ObjectNode', () => {
     expect(
-      createDocumentNode({ content: docNodeBasicJSON, schema: testSchema })!.textContent,
+      createDocumentNode({ content: docNodeBasicJSON, schema: testSchema }).textContent,
     ).toContain('basic');
   });
 
@@ -468,8 +468,8 @@ describe('createDocumentNode', () => {
       createDocumentNode({
         content: '<p>basic html</p>',
         schema: testSchema,
-        stringHandler: fromHtml,
-      })!.textContent,
+        stringHandler: htmlToProsemirrorNode,
+      }).textContent,
     ).toContain('basic html');
   });
 });
@@ -478,11 +478,11 @@ describe('toHTML', () => {
   const node = doc(p('hello'));
 
   it('transforms a doc to its inner html', () => {
-    expect(toHtml({ node, schema: testSchema })).toBe('<p>hello</p>');
+    expect(prosemirrorNodeToHtml({ node, schema: testSchema })).toBe('<p>hello</p>');
   });
 
   it('allows for custom document to be passed in', () => {
-    expect(toHtml({ node, schema: testSchema, document })).toBe('<p>hello</p>');
+    expect(prosemirrorNodeToHtml({ node, schema: testSchema, document })).toBe('<p>hello</p>');
   });
 });
 
@@ -490,11 +490,13 @@ describe('toDOM', () => {
   const node = doc(p('hello'));
 
   it('transforms a doc into a documentFragment', () => {
-    expect(toDom({ node, schema: testSchema })).toBeInstanceOf(DocumentFragment);
+    expect(prosemirrorNodeToDom({ node, schema: testSchema })).toBeInstanceOf(DocumentFragment);
   });
 
   it('allows for custom document to be passed in', () => {
-    expect(toDom({ node, schema: testSchema, document: domino.createDocument() })).toBeObject();
+    expect(
+      prosemirrorNodeToDom({ node, schema: testSchema, document: domino.createDocument() }),
+    ).toBeObject();
   });
 });
 
@@ -502,12 +504,18 @@ describe('fromHTML', () => {
   const content = `<p>Hello</p>`;
 
   it('transform html into a prosemirror node', () => {
-    expect(fromHtml({ content, schema: testSchema })).toEqualProsemirrorNode(doc(p('Hello')));
+    expect(htmlToProsemirrorNode({ content: content, schema: testSchema })).toEqualProsemirrorNode(
+      doc(p('Hello')),
+    );
   });
 
   it('allows for custom document to be passed in', () => {
     expect(
-      fromHtml({ content, schema: testSchema, document: domino.createDocument() }),
+      htmlToProsemirrorNode({
+        content: content,
+        schema: testSchema,
+        document: domino.createDocument(),
+      }),
     ).toEqualProsemirrorNode(doc(p('Hello')));
   });
 });

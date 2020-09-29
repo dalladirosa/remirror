@@ -25,11 +25,13 @@
     "inputrules",
     "keymap",
     "model",
+    "paste-rules",
     "schema-list",
     "state",
     "suggest",
-    "transform",
     "tables",
+    "trailing-node",
+    "transform",
     "view"
   ],
   "dependencies": {
@@ -54,10 +56,12 @@
     "prosemirror-inputrules": "^1.1.3",
     "prosemirror-keymap": "^1.1.4",
     "prosemirror-model": "^1.11.2",
+    "prosemirror-paste-rules": "^0.0.0",
     "prosemirror-schema-list": "^1.1.4",
     "prosemirror-state": "^1.3.3",
     "prosemirror-suggest": "^1.0.0-next.49",
     "prosemirror-tables": "^1.1.1",
+    "prosemirror-trailing-node": "^0.0.0",
     "prosemirror-transform": "^1.2.8",
     "prosemirror-view": "^1.16.0"
   },
@@ -74,10 +78,12 @@
       "inputrules",
       "keymap",
       "model",
+      "paste-rules",
       "schema-list",
       "state",
       "suggest",
       "tables",
+      "trailing-node",
       "transform",
       "view"
     ]

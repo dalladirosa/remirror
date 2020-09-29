@@ -1,6 +1,7 @@
 import React from 'react';
+import { createReactManager, Remirror, useRemirrorContext } from 'remirror/react';
 
-import { act, strictRender, useRemirror } from '@remirror/testing/react';
+import { act, strictRender } from '@remirror/testing/react';
 
 import { PortalContainer, RemirrorPortals, usePortals } from '../../..';
 
@@ -52,21 +53,25 @@ test('usePortals', () => {
   expect(mock).toHaveBeenLastCalledWith([]);
 });
 
-test('access to context via `useRemirror`', () => {
+test('access to context via `useRemirrorContext`', () => {
+  const manager = createReactManager(() => []);
   expect.assertions(1);
 
   const container = document.createElement('span');
-  const fakeContext = {} as any;
 
   const Component = () => {
-    const context = useRemirror();
-    expect(fakeContext).toBe(context);
+    const context = useRemirrorContext();
+    expect(context).toBeObject();
 
     return <div data-testid='test' />;
   };
 
   const portalContainer = new PortalContainer();
-  const { rerender } = strictRender(<RemirrorPortals portals={[]} context={fakeContext} />);
+  const { rerender } = strictRender(
+    <Remirror manager={manager}>
+      <RemirrorPortals portals={[]} />
+    </Remirror>,
+  );
 
   act(() => {
     document.body.append(container);
@@ -74,6 +79,8 @@ test('access to context via `useRemirror`', () => {
   });
 
   rerender(
-    <RemirrorPortals portals={[[container, { key: '1', Component }]]} context={fakeContext} />,
+    <Remirror manager={manager}>
+      <RemirrorPortals portals={[[container, { key: '1', Component }]]} />
+    </Remirror>,
   );
 });

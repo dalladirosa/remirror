@@ -7,8 +7,8 @@
 [version]: https://flat.badgen.net/npm/v/@remirror/extension-auto-link/next
 [npm]: https://npmjs.com/package/@remirror/extension-auto-link/v/next
 [license]: https://flat.badgen.net/badge/license/MIT/purple
-[size]: https://bundlephobia.com/result?p=@remirror/extension-auto-link@next
-[size-badge]: https://flat.badgen.net/bundlephobia/minzip/@remirror/extension-auto-link@next
+[size]: https://bundlephobia.com/result?p=@remirror/extension-auto-link
+[size-badge]: https://flat.badgen.net/bundlephobia/minzip/@remirror/extension-auto-link
 [typescript]: https://flat.badgen.net/badge/icon/TypeScript?icon=typescript&label
 [downloads-badge]: https://badgen.net/npm/dw/@remirror/extension-auto-link/red?icon=npm
 
@@ -17,12 +17,12 @@
 ## Installation
 
 ```bash
-yarn add @remirror/extension-auto-link@next # yarn
-pnpm add @remirror/extension-auto-link@next # pnpm
-npm install @remirror/extension-auto-link@next # npm
+yarn add @remirror/extension-auto-link # yarn
+pnpm add @remirror/extension-auto-link # pnpm
+npm install @remirror/extension-auto-link # npm
 ```
 
-This is included by default when you install the recommended `remirror` package. All exports are also available via the entry-point, `remirror/extension/auto-link`.
+This is included by default when you install the recommended `remirror` package. All exports are also available via the entry-point, `remirror/extensions`.
 
 <br />
 
@@ -31,9 +31,9 @@ This is included by default when you install the recommended `remirror` package.
 When added to your editor the auto link extension will automatically add links to any url like pattern that matches the default regex.
 
 ```ts
-import { ExtensionPriority, RemirrorManager } from 'remirror/core';
-import { AutoLinkExtension } from 'remirror/extension/auto-link';
-import { CorePreset } from 'remirror/preset/core';
+import { ExtensionPriority, RemirrorManager } from 'remirror';
+import { AutoLinkExtension } from 'remirror/extensions';
+import { CorePreset } from 'remirror/extensions';
 
 // Create the auto link extension
 const autoLinkExtension = new AutoLinkExtension();

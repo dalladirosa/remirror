@@ -6,13 +6,15 @@
   "include": [
     "./patches.d.ts",
     "**/*.{md,mdx}/",
+    "scripts",
     "../**/*.ts",
     "../**/*.tsx",
     "../**/*.js",
     "../*.js",
     "../.eslintrc.js",
     "../**/.eslintrc.js",
-    "../**/.babelrc.js"
+    "../**/.babelrc.js",
+    "./**/{ts,tsx,js}"
   ],
   "exclude": ["../**/dist/", "../**/public/", "../**/.cache/", "../**/.linaria-cache/"]
 }

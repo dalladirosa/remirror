@@ -10,56 +10,10 @@ import { useRemirrorPlayground } from './use-remirror-playground';
 
 export const IMPORT_CACHE: { [moduleName: string]: any } = {
   // Auto-imported
-  'remirror/extension/annotation': require('remirror/extension/annotation'),
-  'remirror/extension/auto-link': require('remirror/extension/auto-link'),
-  'remirror/extension/bidi': require('remirror/extension/bidi'),
-  'remirror/extension/blockquote': require('remirror/extension/blockquote'),
-  'remirror/extension/bold': require('remirror/extension/bold'),
-  'remirror/extension/code': require('remirror/extension/code'),
-  'remirror/extension/code-block': require('remirror/extension/code-block'),
-  'remirror/extension/collaboration': require('remirror/extension/collaboration'),
-  'remirror/extension/diff': require('remirror/extension/diff'),
-  'remirror/extension/doc': require('remirror/extension/doc'),
-  'remirror/extension/drop-cursor': require('remirror/extension/drop-cursor'),
-  'remirror/extension/emoji': require('remirror/extension/emoji'),
-  'remirror/extension/epic-mode': require('remirror/extension/epic-mode'),
-  'remirror/extension/events': require('remirror/extension/events'),
-  'remirror/extension/gap-cursor': require('remirror/extension/gap-cursor'),
-  'remirror/extension/hard-break': require('remirror/extension/hard-break'),
-  'remirror/extension/heading': require('remirror/extension/heading'),
-  'remirror/extension/history': require('remirror/extension/history'),
-  'remirror/extension/horizontal-rule': require('remirror/extension/horizontal-rule'),
-  'remirror/extension/image': require('remirror/extension/image'),
-  'remirror/extension/italic': require('remirror/extension/italic'),
-  'remirror/extension/link': require('remirror/extension/link'),
-  'remirror/extension/mention': require('remirror/extension/mention'),
-  'remirror/extension/mention-atom': require('remirror/extension/mention-atom'),
-  'remirror/extension/paragraph': require('remirror/extension/paragraph'),
-  'remirror/extension/placeholder': require('remirror/extension/placeholder'),
-  'remirror/extension/positioner': require('remirror/extension/positioner'),
-  'remirror/extension/react-component': require('remirror/extension/react-component'),
-  'remirror/extension/react-ssr': require('remirror/extension/react-ssr'),
-  'remirror/extension/search': require('remirror/extension/search'),
-  'remirror/extension/strike': require('remirror/extension/strike'),
-  'remirror/extension/text': require('remirror/extension/text'),
-  'remirror/extension/trailing-node': require('remirror/extension/trailing-node'),
-  'remirror/extension/underline': require('remirror/extension/underline'),
-  'remirror/extension/yjs': require('remirror/extension/yjs'),
-  'remirror/preset/core': require('remirror/preset/core'),
-  'remirror/preset/embed': require('remirror/preset/embed'),
-  'remirror/preset/list': require('remirror/preset/list'),
-  'remirror/preset/react': require('remirror/preset/react'),
-  'remirror/preset/social': require('remirror/preset/social'),
-  'remirror/preset/table': require('remirror/preset/table'),
-  'remirror/preset/wysiwyg': require('remirror/preset/wysiwyg'),
 
   // Manually -imported
   remirror: require('remirror'),
-  'remirror/core': require('remirror/core'),
   'remirror/react': require('remirror/react'),
-  'remirror/react/hooks': require('remirror/react/hooks'),
-  'remirror/react/social': require('remirror/react/social'),
-  'remirror/react/wysiwyg': require('remirror/react/wysiwyg'),
   '@remirror/dev': require('@remirror/dev'),
   '@remirror/playground': { useRemirrorPlayground },
   '@remirror/pm/commands': require('@remirror/pm/commands'),
@@ -92,111 +46,111 @@ export const IMPORT_CACHE: { [moduleName: string]: any } = {
 
 export const INTERNAL_MODULES: Array<{ moduleName: string; exports: string[] }> = [
   {
-    moduleName: 'remirror/extension/annotation',
+    moduleName: 'remirror/extensions',
     exports: ['AnnotationExtension', 'createCenteredAnnotationPositioner'],
   },
   {
-    moduleName: 'remirror/extension/auto-link',
+    moduleName: 'remirror/extensions',
     exports: ['AutoLinkExtension'],
   },
   {
-    moduleName: 'remirror/extension/bidi',
+    moduleName: 'remirror/extensions',
     exports: ['BidiExtension'],
   },
   {
-    moduleName: 'remirror/extension/blockquote',
+    moduleName: 'remirror/extensions',
     exports: ['BlockquoteExtension'],
   },
   {
-    moduleName: 'remirror/extension/bold',
+    moduleName: 'remirror/extensions',
     exports: ['BoldExtension'],
   },
   {
-    moduleName: 'remirror/extension/code',
+    moduleName: 'remirror/extensions',
     exports: ['CodeExtension'],
   },
   {
-    moduleName: 'remirror/extension/code-block',
+    moduleName: 'remirror/extensions',
     exports: ['CodeBlockExtension', 'getLanguage'],
   },
   {
-    moduleName: 'remirror/extension/collaboration',
+    moduleName: 'remirror/extensions',
     exports: ['CollaborationExtension'],
   },
   {
-    moduleName: 'remirror/extension/diff',
+    moduleName: 'remirror/extensions',
     exports: ['DiffExtension'],
   },
   {
-    moduleName: 'remirror/extension/doc',
+    moduleName: 'remirror/extensions',
     exports: ['DocExtension'],
   },
   {
-    moduleName: 'remirror/extension/drop-cursor',
+    moduleName: 'remirror/extensions',
     exports: ['DropCursorExtension'],
   },
   {
-    moduleName: 'remirror/extension/emoji',
+    moduleName: 'remirror/extensions',
     exports: ['DEFAULT_FREQUENTLY_USED', 'EmojiExtension'],
   },
   {
-    moduleName: 'remirror/extension/epic-mode',
+    moduleName: 'remirror/extensions',
     exports: ['COLORS', 'EpicModeExtension', 'defaultEffect', 'heartEffect', 'spawningEffect'],
   },
   {
-    moduleName: 'remirror/extension/events',
+    moduleName: 'remirror/extensions',
     exports: ['EventsExtension'],
   },
   {
-    moduleName: 'remirror/extension/gap-cursor',
+    moduleName: 'remirror/extensions',
     exports: ['GapCursorExtension', 'isGapCursorSelection'],
   },
   {
-    moduleName: 'remirror/extension/hard-break',
+    moduleName: 'remirror/extensions',
     exports: ['HardBreakExtension'],
   },
   {
-    moduleName: 'remirror/extension/heading',
+    moduleName: 'remirror/extensions',
     exports: ['HeadingExtension'],
   },
   {
-    moduleName: 'remirror/extension/history',
+    moduleName: 'remirror/extensions',
     exports: ['HistoryExtension'],
   },
   {
-    moduleName: 'remirror/extension/horizontal-rule',
+    moduleName: 'remirror/extensions',
     exports: ['HorizontalRuleExtension'],
   },
   {
-    moduleName: 'remirror/extension/image',
+    moduleName: 'remirror/extensions',
     exports: ['ImageExtension', 'isImageFileType'],
   },
   {
-    moduleName: 'remirror/extension/italic',
+    moduleName: 'remirror/extensions',
     exports: ['ItalicExtension'],
   },
   {
-    moduleName: 'remirror/extension/link',
+    moduleName: 'remirror/extensions',
     exports: ['LinkExtension'],
   },
   {
-    moduleName: 'remirror/extension/mention',
+    moduleName: 'remirror/extensions',
     exports: ['MentionExtension'],
   },
   {
-    moduleName: 'remirror/extension/mention-atom',
+    moduleName: 'remirror/extensions',
     exports: ['MentionAtomExtension'],
   },
   {
-    moduleName: 'remirror/extension/paragraph',
+    moduleName: 'remirror/extensions',
     exports: ['ParagraphExtension'],
   },
   {
-    moduleName: 'remirror/extension/placeholder',
+    moduleName: 'remirror/extensions',
     exports: ['EMPTY_NODE_CLASS_NAME', 'EMPTY_NODE_CLASS_SELECTOR', 'PlaceholderExtension'],
   },
   {
-    moduleName: 'remirror/extension/positioner',
+    moduleName: 'remirror/extensions',
     exports: [
       'isEmptyBlockNode',
       'Positioner',
@@ -211,7 +165,7 @@ export const INTERNAL_MODULES: Array<{ moduleName: string; exports: string[] }> 
     ],
   },
   {
-    moduleName: 'remirror/extension/react-component',
+    moduleName: 'remirror/extensions',
     exports: [
       'PortalContainer',
       'ReactComponentExtension',
@@ -221,55 +175,55 @@ export const INTERNAL_MODULES: Array<{ moduleName: string; exports: string[] }> 
     ],
   },
   {
-    moduleName: 'remirror/extension/react-ssr',
+    moduleName: 'remirror/extensions',
     exports: ['ReactSsrExtension'],
   },
   {
-    moduleName: 'remirror/extension/search',
+    moduleName: 'remirror/extensions',
     exports: ['SearchExtension', 'rotateHighlightedIndex'],
   },
   {
-    moduleName: 'remirror/extension/strike',
+    moduleName: 'remirror/extensions',
     exports: ['StrikeExtension'],
   },
   {
-    moduleName: 'remirror/extension/text',
+    moduleName: 'remirror/extensions',
     exports: ['TextExtension'],
   },
   {
-    moduleName: 'remirror/extension/trailing-node',
+    moduleName: 'remirror/extensions',
     exports: ['TrailingNodeExtension'],
   },
   {
-    moduleName: 'remirror/extension/underline',
+    moduleName: 'remirror/extensions',
     exports: ['UnderlineExtension'],
   },
   {
-    moduleName: 'remirror/extension/yjs',
+    moduleName: 'remirror/extensions',
     exports: ['YjsExtension'],
   },
   {
-    moduleName: 'remirror/preset/core',
+    moduleName: 'remirror/extensions',
     exports: ['CorePreset', 'createCoreManager'],
   },
   {
-    moduleName: 'remirror/preset/embed',
+    moduleName: 'remirror/extensions',
     exports: ['EmbedPreset', 'IframeExtension'],
   },
   {
-    moduleName: 'remirror/preset/list',
+    moduleName: 'remirror/extensions',
     exports: ['BulletListExtension', 'ListItemExtension', 'ListPreset', 'OrderedListExtension'],
   },
   {
-    moduleName: 'remirror/preset/react',
+    moduleName: 'remirror/extensions',
     exports: ['ReactPreset'],
   },
   {
-    moduleName: 'remirror/preset/social',
+    moduleName: 'remirror/extensions',
     exports: ['SocialPreset'],
   },
   {
-    moduleName: 'remirror/preset/table',
+    moduleName: 'remirror/extensions',
     exports: [
       'TableCellExtension',
       'TableExtension',
@@ -279,7 +233,7 @@ export const INTERNAL_MODULES: Array<{ moduleName: string; exports: string[] }> 
     ],
   },
   {
-    moduleName: 'remirror/preset/wysiwyg',
+    moduleName: 'remirror/extensions',
     exports: [
       'EmbedPreset',
       'ListPreset',

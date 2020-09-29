@@ -9,10 +9,15 @@ import markdown from 'refractor/lang/markdown';
 import tsx from 'refractor/lang/tsx';
 import typescript from 'refractor/lang/typescript';
 import yaml from 'refractor/lang/yaml';
-import { HardBreakExtension } from 'remirror/extension/hard-break';
+import { HardBreakExtension } from 'remirror/extensions';
+import { createCoreManager } from 'remirror/extensions';
 
-import { ExtensionPriority, fromHtml, object, toHtml } from '@remirror/core';
-import { createCoreManager } from '@remirror/testing';
+import {
+  ExtensionPriority,
+  htmlToProsemirrorNode,
+  object,
+  prosemirrorNodeToHtml,
+} from '@remirror/core';
 
 import { CodeBlockExtension, CodeBlockOptions, FormatterParameter } from '..';
 import { getLanguage } from '../code-block-utils';
@@ -30,13 +35,13 @@ describe('schema', () => {
   });
 
   it('creates the correct dom node', () => {
-    expect(toHtml({ node: codeBlock(content), schema })).toBe(
+    expect(prosemirrorNodeToHtml({ node: codeBlock(content), schema })).toBe(
       `<pre class="language-${attributes.language}"><code data-code-block-language="${attributes.language}">${content}</code></pre>`,
     );
   });
 
   it('parses the dom structure and finds itself', () => {
-    const node = fromHtml({
+    const node = htmlToProsemirrorNode({
       schema,
       content: `<pre><code class="language-${attributes.language}" data-code-block-language="${attributes.language}">${content}</code></pre>`,
     });

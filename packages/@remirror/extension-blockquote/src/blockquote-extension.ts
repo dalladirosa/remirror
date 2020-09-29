@@ -20,7 +20,9 @@ export class BlockquoteExtension extends NodeExtension {
     return 'blockquote' as const;
   }
 
-  readonly tags = [ExtensionTag.BlockNode];
+  createTags() {
+    return [ExtensionTag.BlockNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {

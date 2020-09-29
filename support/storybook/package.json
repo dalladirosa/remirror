@@ -5,24 +5,32 @@
   "description": "The storybook configuration for the remirror project.",
   "repository": "https://github.com/remirror/remirror/tree/HEAD/support/storybook",
   "scripts": {
-    "build-storybook": "build-storybook -c ./",
-    "storybook": "start-storybook -p 6006 -c ./"
+    "build-storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}'  build-storybook -c ./",
+    "storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}'  start-storybook -p 6006 -c ./"
   },
   "dependencies": {
-    "@babel/core": "^7.11.0",
     "@remirror/pm": "1.0.0-next.49",
-    "@remirror/showcase": "1.0.0-next.49",
+    "@remirror/react-components": "1.0.0-next.49",
+    "@remirror/styles": "1.0.0-next.49",
     "@storybook/addon-actions": "^6.0.26",
     "@storybook/addon-links": "^6.0.26",
     "@storybook/addons": "^6.0.26",
     "@storybook/react": "^6.0.26",
-    "@types/react": "^16.9.51",
-    "@types/react-dom": "^16.9.8",
-    "@types/webpack": "^4.41.22",
-    "babel-loader": "^8.1.0",
+    "clsx": "^1.1.1",
     "linaria": "^2.0.0-rc.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-is": "^16.13.1",
+    "reakit": "^1.2.5",
     "remirror": "1.0.0-next.49"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.0",
+    "@types/react": "^16.9.51",
+    "@types/react-dom": "^16.9.8",
+    "@types/webpack": "^4.41.22",
+    "@types/worker-plugin": "^4.0.0",
+    "babel-loader": "^8.1.0",
+    "worker-plugin": "^5.0.0"
   }
 }

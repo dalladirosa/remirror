@@ -20,7 +20,7 @@ import type {
   Static,
   Transaction,
 } from '@remirror/core-types';
-import { findNodeAtPosition, getTextSelection } from '@remirror/core-utils';
+import { findNodeAtPosition, getTextSelection, isTextSelection } from '@remirror/core-utils';
 import { EditorState, TextSelection } from '@remirror/pm/state';
 import { Decoration, DecorationSet, EditorView } from '@remirror/pm/view';
 
@@ -42,14 +42,8 @@ import {
 } from '../extension';
 import { throwIfNameNotUnique } from '../helpers';
 import type {
-  AnyCombinedUnion,
-  ChainedFromCombined,
-  CommandsFromCombined,
-  RawCommandsFromCombined,
-} from '../preset';
-import type {
   CommandShape,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   ExtensionCommandFunction,
   ExtensionCommandReturn,
   StateUpdateLifecycleParameter,
@@ -258,7 +252,7 @@ export class CommandsExtension extends PlainExtension<CommandOptions> {
        * To use it, firstly define the command.
        *
        * ```ts
-       * import { CommandFunction } from 'remirror/core';
+       * import { CommandFunction } from 'remirror';
        *
        * const myCustomCommand: CommandFunction = ({ tr, dispatch }) => {
        *   dispatch?.(tr.insertText('My Custom Command'));
@@ -289,7 +283,7 @@ export class CommandsExtension extends PlainExtension<CommandOptions> {
        *
        * ```ts
        * import { joinDown } from 'prosemirror-commands';
-       * import { convertCommand } from 'remirror/core';
+       * import { convertCommand } from 'remirror';
        *
        * const MyEditorButton = () => {
        *   const { commands } = useRemirror();
@@ -369,6 +363,32 @@ export class CommandsExtension extends PlainExtension<CommandOptions> {
 
       /**
        * Select the text within the provided range.
+       *
+       * Here are some ways it can be used.
+       *
+       * ```ts
+       * // Set to the end of the document.
+       * commands.setSelection('end');
+       *
+       * // Set the selection to the start of the document.
+       * commands.setSelection('start');
+       *
+       * // Select all the text in the document.
+       * commands.setSelection('all')
+       *
+       * // Select a range of text. It's up to you to make sure the selected
+       * // range is valid.
+       * commands.setSelection({ from: 10, to: 15 });
+       *
+       * // Specify the anchor and range in the selection.
+       * commands.setSelection({ anchor: 10, head: 15 });
+       *
+       * // Set to a specific position.
+       * commands.setSelection(10);
+       *
+       * // Use a ProseMirror selection
+       * commands.setSelection(new TextSelection(state.doc.resolve(10)))
+       * ```
        */
       selectText: (selection: PrimitiveSelection): CommandFunction => ({ tr, dispatch }) => {
         const textSelection = getTextSelection(selection, tr.doc);
@@ -488,6 +508,22 @@ export class CommandsExtension extends PlainExtension<CommandOptions> {
           ? (dispatch?.(tr), true)
           : false;
       },
+
+      /**
+       * Insert a new line into the editor.
+       *
+       * Depending on editor setup and where the cursor is placed this may have
+       * differing impacts.
+       */
+      insertNewLine: (): CommandFunction => ({ dispatch, tr }) => {
+        if (!isTextSelection(tr.selection)) {
+          return false;
+        }
+
+        dispatch?.(tr.insertText('\n'));
+
+        return true;
+      },
     };
 
     return commands;
@@ -497,7 +533,7 @@ export class CommandsExtension extends PlainExtension<CommandOptions> {
    * This plugin stores all tracked positions in the editor and maps them via
    * the transaction updates.
    */
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       state: {
         init: () => {
@@ -853,7 +889,7 @@ const DEFAULT_COMMAND_META: Required<CommandExtensionMeta> = {
  * Provides the list of Prosemirror EditorView props that should be updated/
  */
 export type ForcedUpdateMeta = UpdatableViewProps[];
-export type UpdatableViewProps = 'attributes' | 'editable' | 'nodeViews';
+export type UpdatableViewProps = 'attributes' | 'editable';
 
 export interface CommandExtensionMeta {
   forcedUpdates?: UpdatableViewProps[];
@@ -968,7 +1004,7 @@ const forbiddenNames = new Set(['run', 'chain', 'original', 'raw']);
 
 declare global {
   namespace Remirror {
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * Enables the use of custom commands created by extensions which extend
        * the functionality of your editor in an expressive way.
@@ -985,7 +1021,7 @@ declare global {
        * }
        * ```
        */
-      commands: CommandsFromCombined<Combined>;
+      commands: CommandsFromExtensions<ExtensionUnion>;
 
       /**
        * Chainable commands for composing functionality together in quaint and
@@ -1021,7 +1057,7 @@ declare global {
        *
        * The `run()` method ends the chain and dispatches the command.
        */
-      chain: ChainedFromCombined<Combined>;
+      chain: ChainedFromExtensions<ExtensionUnion>;
 
       /**
        * This object gives you access to all the commands defined by the
@@ -1034,7 +1070,7 @@ declare global {
        * function command(...args: any[]) => CommandFunction;
        * ```
        */
-      rawCommands: RawCommandsFromCombined<Combined>;
+      rawCommands: RawCommandsFromExtensions<ExtensionUnion>;
 
       /**
        * Check for a forced update in the transaction. This pulls the meta data

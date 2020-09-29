@@ -47,7 +47,9 @@ export class BoldExtension extends MarkExtension<BoldOptions> {
     return 'bold' as const;
   }
 
-  readonly tags = [ExtensionTag.FormattingMark, ExtensionTag.FontStyle];
+  createTags() {
+    return [ExtensionTag.FormattingMark, ExtensionTag.FontStyle];
+  }
 
   createMarkSpec(extra: ApplySchemaAttributes): MarkExtensionSpec {
     return {

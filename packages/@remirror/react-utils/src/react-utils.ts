@@ -1,5 +1,4 @@
 import React, {
-  Children,
   ComponentType,
   Fragment,
   isValidElement as isValidReactElement,
@@ -8,7 +7,7 @@ import React, {
 } from 'react';
 
 import { ErrorConstant } from '@remirror/core-constants';
-import { bool, invariant, isFunction, isObject, isString } from '@remirror/core-helpers';
+import { invariant, isFunction, isObject, isString } from '@remirror/core-helpers';
 import type { AnyFunction, UnknownShape } from '@remirror/core-types';
 
 export interface RemirrorComponentStaticProperties {
@@ -32,7 +31,7 @@ export enum RemirrorType {
   Editor = 'editor',
 
   /**
-   * The `RemirrorProvider` component.
+   * The `Remirror` component.
    */
   Provider = 'provider',
 
@@ -92,46 +91,6 @@ export function getElementProps<Type = UnknownShape>(
 }
 
 /**
- * Utility for properly typechecking static defaultProps for a class component in react.
- *
- * ```ts
- * static defaultProps = asDefaultProps<RemirrorProps>()({
- *   initialContent: EMPTY_PARAGRAPH_NODE,
- * });
- * ```
- */
-export const asDefaultProps = <Props extends object>() => <DefaultProps extends Partial<Props>>(
-  props: DefaultProps,
-): DefaultProps => props;
-
-/**
- * Checks if this element has a type of any RemirrorComponent
- *
- * @param value - the value to check
- */
-export const isRemirrorElement = <Options extends object = any>(
-  value: unknown,
-): value is RemirrorElement<Options> => {
-  return bool(
-    isObject(value) &&
-      isValidElement(value) &&
-      (value.type as RemirrorComponentType<Options>).$$remirrorType,
-  );
-};
-
-const isRemirrorElementOfType = (type: RemirrorType) => <Options extends object = any>(
-  value: unknown,
-): value is RemirrorElement<Options> =>
-  isRemirrorElement(value) && value.type.$$remirrorType === type;
-
-/**
- * Finds if this is a RemirrorProvider (which provides the RemirrorInjectedProps into the context);
- *
- * @param value - the value to check
- */
-export const isRemirrorProvider = isRemirrorElementOfType(RemirrorType.Provider);
-
-/**
  * Will throw an error if the child provided is not a function.
  *
  * @remarks
@@ -147,24 +106,6 @@ export const propIsFunction = (value: unknown): value is AnyFunction => {
   });
 
   return true;
-};
-
-/**
- * A drop in replacement for React.Children.only which provides more readable errors
- * when the child is not a react element or undefined.
- */
-export const oneChildOnly = <Props extends object = any>(value: unknown): ReactElement<Props> => {
-  if (!value) {
-    throw new Error('This component requires ONE child component - Nothing was provided');
-  }
-
-  if (!isValidElement(value)) {
-    throw new Error(
-      'This component requires ONE child component - An invalid element was provided',
-    );
-  }
-
-  return Children.only(value);
 };
 
 /**

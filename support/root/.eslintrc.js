@@ -64,7 +64,7 @@ let config = {
     'jest/prefer-spy-on': ['warn'],
     'jest/prefer-todo': ['warn'],
     'jest/prefer-hooks-on-top': ['error'],
-    'jest/no-large-snapshots': ['warn', { maxSize: 12 }],
+    'jest/no-large-snapshots': ['warn', { maxSize: 20 }],
     'jest/no-duplicate-hooks': ['error'],
     'jest/no-if': ['error'],
     'jest/no-restricted-matchers': [
@@ -168,19 +168,24 @@ let config = {
       },
     ],
 
-    // @todo Set `explicit-module-boundary-types` lint rule to `error` once all
-    // issues are resolve @block All exported methods that are exposed to end
-    // users should be explicitly typed. It makes for better readability when
-    // contributing since inference requires more work to determine the return
-    // types, and also it forces deliberate planning.
+    /**
+     * @todo Set `explicit-module-boundary-types` lint rule to `error` once all
+     * issues are resolved
+     * @block All exported methods that are exposed to end users should be
+     * explicitly typed. It makes for better readability when contributing since
+     * inference requires more work to determine the return types, and also it
+     * forces deliberate planning.
+     */
     '@typescript-eslint/explicit-module-boundary-types': [
       'warn',
-      { allowedNames: ['name', 'createHelpers', 'createCommands', 'createExtensions'] },
+      {
+        allowedNames: ['name', 'createHelpers', 'createCommands', 'createExtensions', 'createTags'],
+      },
     ],
 
     // Turning off as it leads to code with bad patterns, where implementation
     // details are placed before the actual meaningful code.
-    '@typescript-eslint/no-use-before-define': ['off', { typedefs: false }],
+    '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/member-ordering': [
       'warn',
       { default: ['signature', 'static-field', 'static-method', 'field', 'constructor', 'method'] },
@@ -272,7 +277,8 @@ let config = {
         '**/__mocks__/**',
         'packages/@remirror/i18n/**/*.ts',
         'docs/**',
-        'support/examples/**',
+        'examples/**',
+        'support/storybook/**',
         'support/e2e/**',
         'support/website/**',
         '**/__stories__',
@@ -294,7 +300,12 @@ let config = {
       },
     },
     {
-      files: ['support/scripts/**', 'support/e2e/**', 'packages/@remirror/playground/scripts/**'],
+      files: [
+        'support/scripts/**/*.js',
+        'support/e2e/**/*.{js,ts}',
+        'packages/@remirror/playground/scripts/import-remirror.ts',
+        'packages/@remirror/playground-next/scripts/import-remirror.ts',
+      ],
       rules: {
         '@typescript-eslint/ban-ts-comment': 'off',
         'unicorn/no-process-exit': 'off',
@@ -311,11 +322,11 @@ let config = {
       },
     },
     {
-      files: ['**/*matchers.ts'],
-      rules: { '@typescript-eslint/explicit-module-boundary-types': 'off' },
-    },
-    {
-      files: ['packages/@remirror/playground/**', 'support/e2e/**'],
+      files: [
+        'packages/@remirror/playground/**',
+        'packages/@remirror/playground-next/**',
+        'support/e2e/**/*.{js,ts}',
+      ],
       rules: { '@typescript-eslint/no-var-requires': 'off' },
     },
     {

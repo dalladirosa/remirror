@@ -15,13 +15,13 @@ import type {
   Writeable,
 } from '@remirror/core-types';
 
+import { DecorationsOptions } from './builtins';
 import type {
   AnyExtensionConstructor,
   DefaultExtensionOptions,
   ExtensionConstructor,
 } from './extension';
 import type { HandlerKeyOptions } from './extension/base-class';
-import type { AnyPresetConstructor, DefaultPresetOptions, PresetConstructor } from './preset';
 
 interface DefaultOptionsParameter<Options extends Shape = EmptyShape> {
   /**
@@ -42,7 +42,7 @@ interface DefaultOptionsParameter<Options extends Shape = EmptyShape> {
    * `null` union.
    *
    * ```ts
-   * import { AcceptUndefined } from 'remirror/core';
+   * import { AcceptUndefined } from 'remirror';
    *
    * interface Options {
    *   optional?: AcceptUndefined<string>;
@@ -123,8 +123,17 @@ interface HandlerKeysParameter<Options extends Shape = EmptyShape> {
    * The above setting means that onChange will exit early as soon as one of the
    * methods returns true.
    */
-  handlerKeyOptions?: Partial<Record<HandlerKey<Options> | '__ALL__', HandlerKeyOptions>>;
+  handlerKeyOptions?: MappedHandlerKeyOptions<Options>;
 }
+
+type MappedHandlerKeyOptions<Options extends Shape = EmptyShape> = {
+  [Key in keyof GetHandler<Options>]?: HandlerKeyOptions<
+    ReturnType<GetHandler<Options>[Key]>,
+    Parameters<GetHandler<Options>[Key]>
+  >;
+} & { __ALL__?: HandlerKeyOptions };
+
+type A = MappedHandlerKeyOptions<DecorationsOptions>;
 
 interface CustomHandlerKeysParameter<Options extends Shape = EmptyShape> {
   customHandlerKeys: CustomHandlerKeyList<Options>;
@@ -198,55 +207,4 @@ export function extensionDecorator<Options extends Shape = EmptyShape>(
 
     return Cast<Type>(Constructor);
   };
-}
-
-export type PresetDecoratorOptions<Options extends Shape = EmptyShape> = IfHasRequiredProperties<
-  DefaultPresetOptions<Options>,
-  DefaultOptionsParameter<Options>,
-  Partial<DefaultOptionsParameter<Options>>
-> &
-  IfEmpty<GetStatic<Options>, Partial<StaticKeysParameter<Options>>, StaticKeysParameter<Options>> &
-  IfEmpty<
-    GetHandler<Options>,
-    Partial<HandlerKeysParameter<Options>>,
-    HandlerKeysParameter<Options>
-  > &
-  IfEmpty<
-    GetCustomHandler<Options>,
-    Partial<CustomHandlerKeysParameter<Options>>,
-    CustomHandlerKeysParameter<Options>
-  >;
-
-/**
- * A decorator for the remirror preset.
- *
- * This adds static properties to the preset constructor.
- */
-export function presetDecorator<Options extends Shape = EmptyShape>(
-  options: PresetDecoratorOptions<Options>,
-) {
-  return <Type extends AnyPresetConstructor>(ReadonlyConstructor: Type): Type => {
-    const { defaultOptions, customHandlerKeys, handlerKeys, staticKeys } = options;
-
-    const Constructor = Cast<Writeable<PresetConstructor<Options>>>(ReadonlyConstructor);
-
-    if (defaultOptions) {
-      Constructor.defaultOptions = defaultOptions;
-    }
-
-    Constructor.staticKeys = staticKeys ?? [];
-    Constructor.handlerKeys = handlerKeys ?? [];
-    Constructor.customHandlerKeys = customHandlerKeys ?? [];
-
-    return Cast<Type>(Constructor);
-  };
-}
-
-declare global {
-  namespace Remirror {
-    /**
-     * An interface for declaring static options for the extension.
-     */
-    interface StaticExtensionOptions {}
-  }
 }

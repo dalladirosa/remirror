@@ -1,7 +1,7 @@
 import { Children, cloneElement, ComponentType, createElement, JSXElementConstructor } from 'react';
 
 import {
-  AnyCombinedUnion,
+  AnyExtension,
   EditorState,
   extensionDecorator,
   ExtensionPriority,
@@ -90,7 +90,7 @@ export class ReactSsrExtension extends PlainExtension<ReactSsrOptions> {
       }
 
       if (extension.createSSRTransformer && !extension.options.exclude?.reactSSR) {
-        ssrTransformers.push(extension.createSSRTransformer);
+        ssrTransformers.push(extension.createSSRTransformer.bind(extension));
       }
     }
 
@@ -208,7 +208,7 @@ declare global {
       reactSSR?: boolean;
     }
 
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * The transformer for updating the SSR rendering of the prosemirror state
        * and allowing it to render without defects.
@@ -243,7 +243,7 @@ declare global {
        * server render. That way there is no jump or layout adjustment when the
        * document first loads on the browser.
        */
-      createSSRTransformer?: () => SsrTransformer;
+      createSSRTransformer?(): SsrTransformer;
     }
   }
 }

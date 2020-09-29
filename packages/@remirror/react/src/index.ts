@@ -1,37 +1,31 @@
-export type {
-  I18nProviderProps,
-  RemirrorProviderProps,
-  ThemeProviderProps,
-} from './react-providers';
-export { I18nProvider, RemirrorProvider, ThemeProvider } from './react-providers';
-
-export type { BaseReactCombinedUnion, UseExtensionCallback, UseRemirrorType } from './hooks';
+export type { UseExtensionCallback, UseRemirrorOutput, UseRemirrorProps } from './hooks';
 export {
   useEffectWithWarning,
   useExtension,
   useForceUpdate,
   useI18n,
   useManager,
-  usePreset,
-  usePrevious,
   useRemirror,
+  useRemirrorContext,
 } from './hooks';
 
+export { RemirrorContext } from './react-contexts';
 export { createReactManager } from './react-helpers';
-
+export type { I18nProviderProps, ThemeProviderProps } from './react-providers';
+export { I18nProvider, ThemeProvider } from './react-providers';
+export type { RemirrorProps } from './react-remirror';
+export { Remirror } from './react-remirror';
 export type {
-  BaseProps,
   CreateReactManagerOptions,
-  DefaultReactCombined,
+  DefaultReactExtensionUnion,
   GetRootPropsConfig,
   I18nContextProps,
-  ReactCombinedUnion,
+  ReactExtensionUnion,
   RefKeyRootProps,
   RefParameter,
   ReactFrameworkOutput,
+  UseRemirrorContextType,
 } from './react-types';
-
-// Export boundary already applied
-export * from './renderers';
-
 export { createEditorView } from './ssr';
+
+export * from './renderers';

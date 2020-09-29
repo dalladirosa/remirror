@@ -65,7 +65,7 @@ const baseMainTsconfig = {
   references: [
     { path: 'support/e2e/tsconfig.json' },
     { path: 'support/storybook/tsconfig.json' },
-    { path: 'support/examples/with-next/tsconfig.json' },
+    { path: 'examples/with-next/tsconfig.json' },
     { path: 'support/tsconfig.all.json' },
   ],
 };

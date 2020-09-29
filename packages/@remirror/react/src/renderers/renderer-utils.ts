@@ -14,13 +14,15 @@ function getPossibleStandardName(key: string): string {
     return key;
   }
 
-  return possibleStandardNames[key] || key;
+  return possibleStandardNames[key] ?? key;
 }
 
 /**
  * Map standard html attribute names to their react equivalents.
+ *
+ * TODO is there a better way of doing this.
  */
-export function mapProps(props: Shape) {
+export function mapProps(props: Shape): Shape {
   const transformedProps: Shape = object();
 
   for (const key of keys(props)) {
@@ -42,7 +44,7 @@ export function mapProps(props: Shape) {
  */
 export function gatherDomMethods<Spec extends MarkExtensionSpec | NodeExtensionSpec>(
   specs: Record<string, Spec>,
-) {
+): Record<string, Spec['toDOM']> {
   const result: Record<string, Spec['toDOM']> = object();
 
   for (const name in specs) {

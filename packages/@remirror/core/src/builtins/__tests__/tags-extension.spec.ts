@@ -5,7 +5,7 @@ import {
   ExtensionTag,
   mutateTag,
   NodeExtension,
-} from 'remirror/core';
+} from 'remirror';
 
 import { hideConsoleError } from '@remirror/testing';
 
@@ -23,7 +23,9 @@ describe('tags', () => {
     }
 
     // @ts-expect-error
-    tags = ['awesome'];
+    createTags() {
+      return ['awesome'];
+    }
 
     createNodeSpec(extra: ApplySchemaAttributes) {
       return { attrs: extra.defaults() };
@@ -37,7 +39,9 @@ describe('tags', () => {
         return 'custom';
       }
 
-      tags = [ExtensionTag.Alignment];
+      createTags() {
+        return [ExtensionTag.Alignment];
+      }
 
       createNodeSpec() {
         return {};

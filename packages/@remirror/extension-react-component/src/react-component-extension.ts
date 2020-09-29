@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
 import {
-  AnyCombinedUnion,
+  AnyExtension,
   entries,
   extensionDecorator,
   isNodeExtension,
@@ -137,7 +137,7 @@ export class ReactComponentExtension extends PlainExtension<ReactComponentOption
 
 declare global {
   namespace Remirror {
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * The portal container which keeps track of all the React Portals
        * containing custom ProseMirror node views.

@@ -1,6 +1,10 @@
+import { isArray } from '@remirror/core-helpers';
 import type { ProsemirrorPlugin } from '@remirror/core-types';
+import { PasteRule, pasteRules } from '@remirror/pm/paste-rules';
 
 import { PlainExtension } from '../extension';
+
+export interface PasteRulesOptions {}
 
 /**
  * This extension allows others extension to add the `createPasteRules` method
@@ -14,11 +18,12 @@ export class PasteRulesExtension extends PlainExtension {
     return 'pasteRules' as const;
   }
 
-  /**
-   * Ensure that all ssr transformers are run.
-   */
-  onCreate(): void {
-    const pasteRules: ProsemirrorPlugin[] = [];
+  createExternalPlugins(): ProsemirrorPlugin[] {
+    return [this.generatePasteRulesPlugin()];
+  }
+
+  private generatePasteRulesPlugin() {
+    const extensionPasteRules: PasteRule[] = [];
 
     for (const extension of this.store.extensions) {
       if (
@@ -32,11 +37,13 @@ export class PasteRulesExtension extends PlainExtension {
         continue;
       }
 
-      pasteRules.push(...extension.createPasteRules());
+      const value = extension.createPasteRules();
+      const rules = isArray(value) ? value : [value];
+
+      extensionPasteRules.push(...rules);
     }
 
-    // TODO rewrite so this is all one plugin
-    this.store.addPlugins(...pasteRules);
+    return pasteRules(extensionPasteRules);
   }
 }
 
@@ -55,11 +62,10 @@ declare global {
       /**
        * Register paste rules for this extension.
        *
-       * Paste rules are activated when text is pasted into the editor.
-       *
-       * TODO - The paste plugin is currently switched off.
+       * Paste rules are activated when text, images, or html is pasted into the
+       * editor.
        */
-      createPasteRules?(): ProsemirrorPlugin[];
+      createPasteRules?(): PasteRule[] | PasteRule;
     }
 
     interface AllExtensions {

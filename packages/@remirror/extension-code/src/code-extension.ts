@@ -9,10 +9,9 @@ import {
   MarkExtension,
   MarkExtensionSpec,
   markInputRule,
-  markPasteRule,
-  ProsemirrorPlugin,
   toggleMark,
 } from '@remirror/core';
+import { MarkPasteRule } from '@remirror/pm/paste-rules';
 
 /**
  * Add a `code` mark to the editor. This is used to mark inline text as a code
@@ -24,7 +23,9 @@ export class CodeExtension extends MarkExtension {
     return 'code' as const;
   }
 
-  readonly tags = [ExtensionTag.Code, ExtensionTag.MarkSupportsExit];
+  createTags() {
+    return [ExtensionTag.Code, ExtensionTag.MarkSupportsExit];
+  }
 
   createMarkSpec(extra: ApplySchemaAttributes): MarkExtensionSpec {
     return {
@@ -59,8 +60,8 @@ export class CodeExtension extends MarkExtension {
     ];
   }
 
-  createPasteRules(): ProsemirrorPlugin[] {
-    return [markPasteRule({ regexp: /`([^`]+)`/g, type: this.type })];
+  createPasteRules(): MarkPasteRule[] {
+    return [{ type: 'mark', regexp: /`([^`]+)`/g, markType: this.type }];
   }
 }
 

@@ -56,8 +56,8 @@ interface Everything {
 }
 
 function template({ extensions, presets }: Everything) {
-  // import * as remirrorCore from 'remirror/core';
-  // 'remirror/core': remirrorCore,
+  // import * as remirrorCore from 'remirror';
+  // 'remirror': remirrorCore,
 
   const extensionsAndPresets: RemirrorModuleMeta[] = [
     ...Object.values(extensions),
@@ -84,11 +84,11 @@ export const IMPORT_CACHE: { [moduleName: string]: any } = {
 
   // Manually -imported
   remirror: require('remirror'),
-  'remirror/core': require('remirror/core'),
+  'remirror': require('remirror'),
   'remirror/react': require('remirror/react'),
-  'remirror/react/hooks': require('remirror/react/hooks'),
-  'remirror/react/social': require('remirror/react/social'),
-  'remirror/react/wysiwyg': require('remirror/react/wysiwyg'),
+  'remirror/react': require('remirror/react'),
+  'remirror/react': require('remirror/react'),
+  'remirror/react': require('remirror/react'),
   '@remirror/dev': require('@remirror/dev'),
   '@remirror/playground': { useRemirrorPlayground },
   '@remirror/pm/commands': require('@remirror/pm/commands'),
@@ -145,12 +145,12 @@ async function main() {
   // TypeScript definitions.
   const extensions = await scanImportsFrom(
     `${__dirname}/../../../remirror/extension`,
-    'remirror/extension',
+    'remirror/extensions',
     importExtension,
   );
   const presets = await scanImportsFrom(
     `${__dirname}/../../../remirror/preset`,
-    'remirror/preset',
+    'remirror/extensions',
     importPreset,
   );
   const everything: Everything = {

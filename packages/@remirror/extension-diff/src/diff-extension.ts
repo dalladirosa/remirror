@@ -1,6 +1,6 @@
 import {
   CommandFunction,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   EditorState,
   EditorView,
   extensionDecorator,
@@ -164,7 +164,7 @@ export class DiffExtension extends PlainExtension<DiffOptions> {
    * This has been adapted from the prosemirror website demo.
    * https://github.com/ProseMirror/website/blob/master/example/track/index.js
    */
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       state: {
         init: (_, state) => {

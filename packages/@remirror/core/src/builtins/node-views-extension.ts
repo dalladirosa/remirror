@@ -2,7 +2,7 @@ import { isFunction, object } from '@remirror/core-helpers';
 import type { NodeViewMethod } from '@remirror/core-types';
 
 import { PlainExtension } from '../extension';
-import type { AnyCombinedUnion } from '../preset';
+import { CreateExtensionPlugin } from '../types';
 
 /**
  * This extension allows others extension to add the `createNodeView` method
@@ -20,22 +20,13 @@ export class NodeViewsExtension extends PlainExtension {
     return 'nodeViews' as const;
   }
 
-  /**
-   * Ensure that all SSR transformers are run.
-   */
-  onCreate(): void {
+  createPlugin(): CreateExtensionPlugin {
     const nodeViewList: Array<Record<string, NodeViewMethod>> = [];
     const nodeViews: Record<string, NodeViewMethod> = object();
 
     for (const extension of this.store.extensions) {
-      if (
-        // managerSettings excluded this from running
-        this.store.managerSettings.exclude?.nodeViews ||
+      if (!extension.createNodeViews) {
         // Method doesn't exist
-        !extension.createNodeViews ||
-        // Extension settings exclude it
-        extension.options.exclude?.nodeViews
-      ) {
         continue;
       }
 
@@ -53,7 +44,9 @@ export class NodeViewsExtension extends PlainExtension {
       Object.assign(nodeViews, nodeView);
     }
 
-    this.store.setStoreKey('nodeViews', nodeViews);
+    return {
+      props: { nodeViews },
+    };
   }
 }
 
@@ -65,23 +58,6 @@ declare global {
        * nodeViews provided by the extensions and plugins.
        */
       nodeViews?: Record<string, NodeViewMethod>;
-    }
-
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
-      /**
-       * The custom nodeView which can be used to replace the nodes or marks in
-       * the DOM and change their browser behavior.
-       */
-      nodeViews: Record<string, NodeViewMethod>;
-    }
-
-    interface ExcludeOptions {
-      /**
-       * Whether to exclude the extension's nodeView
-       *
-       * @default undefined
-       */
-      nodeViews?: boolean;
     }
 
     interface ExtensionCreatorMethods {
@@ -96,8 +72,6 @@ declare global {
        * from the `plugin` method.
        *
        * @param parameter - schema parameter with type included
-       *
-       * @alpha
        */
       createNodeViews?(): NodeViewMethod | Record<string, NodeViewMethod>;
     }

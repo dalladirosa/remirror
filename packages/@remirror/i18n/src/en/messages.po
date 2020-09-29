@@ -13,7 +13,22 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#. The alt text for the user mention avatar.
-#: packages/@remirror/react-social/src/social-messages.ts:2
-msgid "user.mention.avatar.alt"
-msgstr "Avatar for { name }"
+#. The label for the bold menu button.
+#: packages/@remirror/react-components/src/react-component-messages.ts:7
+msgid "bold.menu.icon.label"
+msgstr "Bold"
+
+#. The label for the image menu button.
+#: packages/@remirror/react-components/src/react-component-messages.ts:17
+msgid "image.menu.icon.label"
+msgstr "Image"
+
+#. The label for the italic menu button.
+#: packages/@remirror/react-components/src/react-component-messages.ts:12
+msgid "italic.menu.icon.label"
+msgstr "Italic"
+
+#. The aria label for the static menu.
+#: packages/@remirror/react-components/src/react-component-messages.ts:2
+msgid "static-menu.label"
+msgstr "Static menu"

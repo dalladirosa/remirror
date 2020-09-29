@@ -57,19 +57,9 @@ export type ChangedOptions<Options extends ValidOptions> = {
 export type GetOptions<Type extends { ['~O']: unknown }> = Type['~O'];
 
 /**
- * Get the schema from a `RemirrorManager`.
- */
-export type GetSchema<Type extends { ['~Sch']: unknown }> = Type['~Sch'];
-
-/**
  * Get the commands from a `RemirrorManager`, `Extension` or `Preset`.
  */
 export type GetCommands<Type extends { ['~C']: unknown }> = Type['~C'];
-
-/**
- * Get the Extensions from a `RemirrorManager`, or `Preset`.
- */
-export type GetExtensions<Type extends { ['~E']: unknown }> = Type['~E'];
 
 /**
  * Get the helpers provided by an from a `RemirrorManager`, `Extension` or
@@ -146,6 +136,35 @@ export interface CommandShape<Parameter extends any[] = []> {
   isEnabled: (attrs?: ProsemirrorAttributes) => boolean;
 
   (...args: Parameter): void;
+}
+
+export interface ApplyStateLifecycleParameter extends EditorStateParameter {
+  /**
+   * The original transaction which caused this state update.
+   */
+  tr: Transaction;
+
+  /**
+   * The previous state.
+   */
+  previousState: EditorState;
+}
+
+export interface AppendLifecycleParameter extends EditorStateParameter {
+  /**
+   * Update this transaction in order to append.
+   */
+  tr: Transaction;
+
+  /**
+   * The previous state.
+   */
+  previousState: EditorState;
+
+  /**
+   * The transactions that have already been applied.
+   */
+  transactions: Transaction[];
 }
 
 export interface StateUpdateLifecycleParameter extends EditorStateParameter {
@@ -298,5 +317,5 @@ declare global {
 /**
  * An interface for creating custom plugins in your `remirror` editor.
  */
-export interface CreatePluginReturn<PluginState = any>
+export interface CreateExtensionPlugin<PluginState = any>
   extends Except<PluginSpec<PluginState, EditorSchema>, 'key'> {}

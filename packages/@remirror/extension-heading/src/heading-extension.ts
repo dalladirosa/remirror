@@ -15,12 +15,13 @@ import {
   toggleBlockItem,
 } from '@remirror/core';
 import { textblockTypeInputRule } from '@remirror/pm/inputrules';
+import { NodePasteRule } from '@remirror/pm/paste-rules';
 
 export interface HeadingOptions {
   /**
    * The numerical value of the supporting headings.
    *
-   * @default [1, 2, 3, 4, 5, 6]
+   * @default `[1, 2, 3, 4, 5, 6]`
    */
   levels?: Static<number[]>;
 
@@ -53,7 +54,9 @@ export class HeadingExtension extends NodeExtension<HeadingOptions> {
     return 'heading' as const;
   }
 
-  readonly tags = [ExtensionTag.BlockNode];
+  createTags() {
+    return [ExtensionTag.BlockNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {
@@ -109,6 +112,16 @@ export class HeadingExtension extends NodeExtension<HeadingOptions> {
     return this.options.levels.map((level) =>
       textblockTypeInputRule(new RegExp(`^(#{1,${level}})\\s$`), this.type, () => ({ level })),
     );
+  }
+
+  createPasteRules(): NodePasteRule[] {
+    return this.options.levels.map((level) => ({
+      type: 'node',
+      nodeType: this.type,
+      regexp: new RegExp(`^#{1,${level}}\\s([\\s\\w]+)$`),
+      getAttributes: () => ({ level }),
+      startOfTextBlock: true,
+    }));
   }
 }
 

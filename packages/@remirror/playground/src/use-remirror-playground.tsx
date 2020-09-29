@@ -1,13 +1,12 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  AnyCombinedUnion,
+import type {
+  AnyExtension,
   EditorState,
   EditorView,
-  EMPTY_PARAGRAPH_NODE,
   RemirrorEventListener,
   RemirrorJSON,
   RemirrorManager,
-} from 'remirror/core';
+} from 'remirror';
 
 import { PlaygroundContext } from './context';
 
@@ -30,20 +29,20 @@ PERSIST.previousView = null;
 PERSIST.lastKnownGoodState = null;
 
 export function useRemirrorPlayground(
-  extensionManager: RemirrorManager<AnyCombinedUnion>,
+  extensionManager: RemirrorManager<AnyExtension>,
 ): {
   value: EditorState;
-  onChange: RemirrorEventListener<AnyCombinedUnion>;
+  onChange: RemirrorEventListener<AnyExtension>;
 } {
   const playground = useContext(PlaygroundContext);
-  const [value, setValue] = useState<EditorState>(
+  const [value, setValue] = useState<EditorState>(() =>
     extensionManager.createState({
       content: PERSIST.lastKnownGoodState
         ? (PERSIST.lastKnownGoodState.doc.toJSON() as RemirrorJSON)
-        : EMPTY_PARAGRAPH_NODE,
+        : extensionManager.createEmptyDoc(),
     }),
   );
-  const onChange = useCallback<RemirrorEventListener<AnyCombinedUnion>>((event) => {
+  const onChange = useCallback<RemirrorEventListener<AnyExtension>>((event) => {
     PERSIST.lastKnownGoodState = event.state;
     setValue(event.state);
   }, []);

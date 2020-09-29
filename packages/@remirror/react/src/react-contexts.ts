@@ -5,7 +5,7 @@ import { i18n } from '@remirror/i18n';
 import type { I18nContextProps, ReactFrameworkOutput } from './react-types';
 
 /**
- * Creates a ReactContext for the Remirror editor
+ * The `ReactContext` for the Remirror editor.
  */
 export const RemirrorContext = createContext<ReactFrameworkOutput<any> | null>(null);
 

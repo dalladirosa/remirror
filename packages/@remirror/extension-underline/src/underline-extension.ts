@@ -15,7 +15,9 @@ export class UnderlineExtension extends MarkExtension {
     return 'underline' as const;
   }
 
-  readonly tags = [ExtensionTag.FontStyle];
+  createTags() {
+    return [ExtensionTag.FontStyle];
+  }
 
   createMarkSpec(extra: ApplySchemaAttributes): MarkExtensionSpec {
     return {

@@ -81,7 +81,7 @@ export type ExtensionTags = Remirror.ExtensionTags & typeof BaseExtensionTag;
  * A method for updating the extension tags.
  *
  * ```tsx
- * import { ExtensionTag, mutateTag } from 'remirror/core';
+ * import { ExtensionTag, mutateTag } from 'remirror';
  *
  * mutateTag((tag) => {
  *   tag.SuperCustom = 'superCustom';
@@ -213,6 +213,11 @@ const BaseExtensionTag = {
    * with an arrow key.
    */
   MarkSupportsExit: 'markSupportsExits',
+
+  /**
+   * Represents a media node.
+   */
+  Media: 'media',
 } as const;
 
 /**
@@ -231,71 +236,6 @@ export const ExtensionTag = BaseExtensionTag as ExtensionTags;
  * The string values which can be used as extension tags.
  */
 export type ExtensionTagType = ExtensionTags[keyof ExtensionTags];
-
-/**
- * Marks are categorized into different groups. One motivation for this was to
- * allow the `code` mark to exclude other marks, without needing to explicitly
- * name them. Explicit naming requires the named mark to exist in the schema.
- * This is undesirable because we want to construct different schemas that have
- * different sets of nodes/marks.
- *
- * @deprecated use `ExtensionTag` instead
- */
-export enum MarkGroup {
-  /**
-   * Mark group for font styling (e.g. bold, italic, underline, superscript).
-   */
-  FontStyle = 'fontStyle',
-
-  /**
-   * Mark groups for links.
-   */
-  Link = 'link',
-
-  /**
-   * Mark groups for colors (text-color, background-color, etc).
-   */
-  Color = 'color',
-
-  /**
-   * Mark group for alignment.
-   */
-  Alignment = 'alignment',
-
-  /**
-   * Mark group for indentation.
-   */
-  Indentation = 'indentation',
-
-  /**
-   * Marks which affect behavior.
-   */
-  Behavior = 'behavior',
-
-  /**
-   * Marks which store code.
-   */
-  Code = 'code',
-}
-
-/**
- * @deprecated use `ExtensionTag` instead
- */
-export enum NodeGroup {
-  /**
-   * Whether this node is an inline node.
-   *
-   * @example
-   *
-   * `text` is an inline node, but `paragraph` is a block node.
-   */
-  Inline = 'inline',
-
-  /**
-   * Sets this as a block level node.
-   */
-  Block = 'block',
-}
 
 /**
  * The identifier key which is used to check objects for whether they are a

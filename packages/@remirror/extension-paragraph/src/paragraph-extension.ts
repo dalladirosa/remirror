@@ -24,7 +24,9 @@ export class ParagraphExtension extends NodeExtension {
     return 'paragraph' as const;
   }
 
-  readonly tags = [ExtensionTag.LastNodeCompatible, ExtensionTag.BlockNode];
+  createTags() {
+    return [ExtensionTag.LastNodeCompatible, ExtensionTag.BlockNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {

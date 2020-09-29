@@ -696,7 +696,7 @@ export interface SuggestMarkParameter {
 /**
  * A parameter builder interface indicating the reason the handler was called.
  *
- * @typeParam Reason - Whether this is change or an exit reason.
+ * @template Reason - Whether this is change or an exit reason.
  */
 export interface ReasonParameter {
   /**
@@ -777,7 +777,7 @@ export interface SuggestReasonMap<Schema extends EditorSchema = EditorSchema> {
  *
  * This is used to build parameters for {@link Suggester} handler methods.
  *
- * @typeParam Reason - Whether this is change or an exit reason.
+ * @template Reason - Whether this is change or an exit reason.
  */
 export interface ReasonMatchParameter {
   /**
@@ -845,7 +845,7 @@ export type Transaction<
 /**
  * A parameter builder interface containing the `tr` property.
  *
- * @typeParam Schema - the underlying editor schema.
+ * @template Schema - the underlying editor schema.
  */
 export interface TransactionParameter<Schema extends EditorSchema = EditorSchema> {
   /**
@@ -861,7 +861,7 @@ export type EditorState<
 /**
  * A parameter builder interface containing the `state` property.
  *
- * @typeParam Schema - the underlying editor schema.
+ * @template Schema - the underlying editor schema.
  */
 export interface EditorStateParameter<Schema extends EditorSchema = EditorSchema> {
   /**
@@ -875,7 +875,7 @@ export type ResolvedPos<
 > = import('prosemirror-model').ResolvedPos<Schema>;
 
 /**
- * @typeParam Schema - the underlying editor schema.
+ * @template Schema - the underlying editor schema.
  */
 export interface ResolvedPosParameter<Schema extends EditorSchema = EditorSchema> {
   /**
@@ -902,7 +902,7 @@ export type EditorView<
 /**
  * A parameter builder interface containing the `view` property.
  *
- * @typeParam Schema - the underlying editor schema.
+ * @template Schema - the underlying editor schema.
  */
 export interface EditorViewParameter<Schema extends EditorSchema = EditorSchema> {
   /**

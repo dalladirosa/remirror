@@ -1,7 +1,7 @@
 import direction from 'direction';
 
 import type {
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   IdentifierSchemaAttributes,
   NodeAttributes,
   OnSetOptionsParameter,
@@ -84,7 +84,7 @@ export class BidiExtension extends PlainExtension<BidiOptions> {
    * Create the plugin that ensures the node has the correct `dir` value on each
    * state update.
    */
-  createPlugin(): CreatePluginReturn<boolean> {
+  createPlugin(): CreateExtensionPlugin<boolean> {
     return {
       state: {
         init: () => false,

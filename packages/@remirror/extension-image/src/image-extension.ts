@@ -3,7 +3,7 @@ import {
   bool,
   Cast,
   CommandFunction,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   extensionDecorator,
   ExtensionTag,
   isElementDomNode,
@@ -32,7 +32,9 @@ export class ImageExtension extends NodeExtension {
     return 'image' as const;
   }
 
-  readonly tags = [ExtensionTag.InlineNode];
+  createTags() {
+    return [ExtensionTag.InlineNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {
@@ -79,7 +81,7 @@ export class ImageExtension extends NodeExtension {
     };
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       props: {
         handleDOMEvents: {
@@ -150,7 +152,14 @@ export interface ImageExtensionOptions {}
 /**
  * The set of valid image files.
  */
-const IMAGE_FILE_TYPES = new Set(['image/jpeg', 'image/gif', 'image/png', 'image/jpg']);
+const IMAGE_FILE_TYPES = new Set([
+  'image/jpeg',
+  'image/gif',
+  'image/png',
+  'image/jpg',
+  'image/svg',
+  'image/webp',
+]);
 
 /**
  * True when the provided file is an image file.

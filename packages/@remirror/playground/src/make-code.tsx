@@ -39,9 +39,9 @@ export function makeCode(codeOptions: CodeOptions): string {
 
   addImport('react', ['default', 'React']);
   addImport('react', 'FC');
-  addImport('remirror/react', 'RemirrorProvider');
-  //addImport('remirror/extension/bold', 'BoldExtension');
-  //addImport('remirror/extension/italic', 'ItalicExtension');
+  addImport('remirror/react', 'Remirror');
+  //addImport('remirror/extensions', 'BoldExtension');
+  //addImport('remirror/extensions', 'ItalicExtension');
   addImport('remirror/react', 'useManager');
   // addImport('remirror/react', 'useExtension');
   addImport('remirror/react', 'useRemirror');
@@ -136,13 +136,13 @@ const SmallEditorContainer = () => {
   const { value, onChange } = useRemirrorPlayground(extensionManager); // Delete this line
 
   return (
-    <RemirrorProvider
+    <Remirror
       manager={extensionManager}
       value={value}
       onChange={onChange}
     >
       <SmallEditor />
-    </RemirrorProvider>
+    </Remirror>
   );
 };
 

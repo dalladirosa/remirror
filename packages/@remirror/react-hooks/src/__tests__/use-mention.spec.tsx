@@ -4,7 +4,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { NON_BREAKING_SPACE_CHAR } from '@remirror/core';
 import { MentionExtension, MentionExtensionAttributes } from '@remirror/extension-mention';
 import { ChangeReason } from '@remirror/pm/suggest';
-import { createReactManager, RemirrorProvider } from '@remirror/react';
+import { createReactManager, Remirror } from '@remirror/react';
 import { act, DefaultEditor, strictRender } from '@remirror/testing/react';
 
 import { MentionState, useMention, UseMentionExitHandler } from '../use-mention';
@@ -286,10 +286,10 @@ function createEditor() {
 
   const Wrapper: FC<Props> = (props) => {
     return (
-      <RemirrorProvider manager={manager} initialContent={[doc(p('Initial content ')), 'end']}>
+      <Remirror manager={manager} initialContent={[doc(p('Initial content ')), 'end']}>
         <DefaultEditor />
         <Component {...props} />
-      </RemirrorProvider>
+      </Remirror>
     );
   };
 

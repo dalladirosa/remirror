@@ -3,7 +3,7 @@ import { languages } from 'monaco-editor';
 import React, { FC, useContext, useEffect, useRef } from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-// addImport('@remirror/react', 'RemirrorProvider');
+// addImport('@remirror/react', 'Remirror');
 // addImport('@remirror/react', 'useManager');
 // addImport('@remirror/react', 'useExtension');
 import { IMPORT_CACHE, INTERNAL_MODULES } from './_remirror';

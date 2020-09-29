@@ -1,7 +1,17 @@
 const { kebabCase } = require('case-anything');
 
 /**
- * @type import('linaria/lib/babel/types').StrictOptions
+ * @typedef { Object } StrictOptions
+ * @property { ((hash: string, title: string) => string) | string | undefined } classNameSlug
+ * @property { boolean } displayName
+ * @property { boolean } evaluate
+ * @property { RegExp | undefined } ignore
+ * @property { TransformOptions} babelOptions
+ * @property { Array<{ test?: RegExp | ((path: string) => boolean); action: Evaluator | 'ignore' | string}> } rules
+ */
+
+/**
+ * @type {StrictOptions}
  */
 const config = {
   displayName: true,

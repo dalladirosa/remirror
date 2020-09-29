@@ -1,7 +1,7 @@
 import {
   ApplySchemaAttributes,
   CommandFunction,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   extensionDecorator,
   ExtensionPriority,
   ExtensionTag,
@@ -20,7 +20,6 @@ import {
   MarkAttributes,
   MarkExtension,
   MarkExtensionSpec,
-  markPasteRule,
   OnSetOptionsParameter,
   preserveSelection,
   ProsemirrorPlugin,
@@ -29,6 +28,7 @@ import {
   Static,
   updateMark,
 } from '@remirror/core';
+import { MarkPasteRule } from '@remirror/pm/paste-rules';
 import { TextSelection } from '@remirror/pm/state';
 import { isInvalidSplitReason, isRemovedReason, Suggester } from '@remirror/pm/suggest';
 
@@ -101,7 +101,9 @@ export class LinkExtension extends MarkExtension<LinkOptions> {
     return 'link' as const;
   }
 
-  readonly tags = [ExtensionTag.Link];
+  createTags() {
+    return [ExtensionTag.Link];
+  }
 
   createMarkSpec(extra: ApplySchemaAttributes): MarkExtensionSpec {
     const AUTO_ATTRIBUTE = 'data-link-auto';
@@ -219,14 +221,16 @@ export class LinkExtension extends MarkExtension<LinkOptions> {
   /**
    * Create the paste rules that can transform a pasted link in the document.
    */
-  createPasteRules(): ProsemirrorPlugin[] {
-    return [
-      markPasteRule({
-        regexp: /https?:\/\/(www\.)?[\w#%+.:=@~-]{2,256}\.[a-z]{2,6}\b([\w#%&+./:=?@~-]*)/gi,
-        type: this.type,
-        getAttributes: (url) => ({ href: getMatchString(url), auto: true }),
-      }),
-    ];
+  createPasteRules(): MarkPasteRule {
+    return {
+      type: 'mark',
+      regexp: /https?:\/\/(www\.)?[\w#%+.:=@~-]{2,256}\.[a-z]{2,6}\b([\w#%&+./:=?@~-]*)/gi,
+      markType: this.type,
+      getAttributes: (url) => ({ href: getMatchString(url), auto: true }),
+      // Give this a low priority so that it can be by embedders which respond
+      // to url regex.
+      priority: ExtensionPriority.Lowest,
+    };
   }
 
   createSuggesters(): Suggester[] {
@@ -440,7 +444,7 @@ export class LinkExtension extends MarkExtension<LinkOptions> {
    * TODO extract this into the events extension and move that extension into
    * core.
    */
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       props: {
         handleClick: (view, pos) => {

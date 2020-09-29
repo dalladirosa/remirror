@@ -9,13 +9,10 @@ import {
   RemirrorIdentifier,
 } from '@remirror/core-constants';
 import {
-  camelCase,
   deepMerge,
   invariant,
-  isArray,
   isEmptyArray,
   isFunction,
-  isPlainObject,
   keys,
   noop,
   object,
@@ -47,12 +44,6 @@ import type {
 
 import { getChangedOptions } from '../helpers';
 import type { OnSetOptionsParameter } from '../types';
-
-interface BaseClassConstructorParameter<DefaultStaticOptions extends Shape = EmptyShape> {
-  validator: (Constructor: unknown, code: ErrorConstant) => void;
-  code: ErrorConstant;
-  defaultOptions: DefaultStaticOptions;
-}
 
 const IGNORE = '__IGNORE__';
 const GENERAL_OPTIONS = '__ALL__' as const;
@@ -92,30 +83,10 @@ export abstract class BaseClass<
   static readonly customHandlerKeys: string[] = [];
 
   /**
-   * Get the instance name of the instance from the constructor.
-   *
-   * - `'CorePreset'` => `'core'`
-   * - `'AwesomeNodeExtension'` => `'awesomeNode'`
-   *
-   * The solution was adapted from https://stackoverflow.com/a/7888303/2172153.
-   */
-  static get instanceName(): string {
-    // Make sure to camelCase the string (so that the first letter is
-    // lowercase). `'BoldExtension'` => `'boldExtension'`
-    return camelCase(
-      this.name
-        // Split by capitals `'boldExtension'` => `['bold', 'Extension']`.
-        .split(/(?=[A-Z])/)
-        // Drop the last index. `['bold', 'Extension']` => `['bold']`.
-        .slice(0, -1)
-        // Rejoin the word `['bold']` => `'bold'`.
-        .join(''),
-    );
-  }
-
-  /**
    * This is not for external use. It is purely here for TypeScript inference of
    * the generic `Options` type parameter.
+   *
+   * @internal
    */
   ['~O']: Options & DefaultStaticOptions;
 
@@ -197,12 +168,9 @@ export abstract class BaseClass<
   #mappedHandlers: GetMappedHandler<Options>;
 
   constructor(
-    { validator, defaultOptions, code }: BaseClassConstructorParameter<DefaultStaticOptions>,
-    ...parameters: ConstructorParameter<Options, DefaultStaticOptions>
+    defaultOptions: DefaultStaticOptions,
+    ...[options]: ConstructorParameter<Options, DefaultStaticOptions>
   ) {
-    validator(this.constructor, code);
-
-    const [options] = parameters;
     this.#mappedHandlers = object();
     this.populateMappedHandlers();
 
@@ -402,11 +370,13 @@ export abstract class BaseClass<
 
     for (const key of this.constructor.handlerKeys as HandlerKeyList<Options>) {
       methods[key] = (...args: any[]) => {
-        let returnValue: unknown;
+        const { handlerKeyOptions } = this.constructor;
+        const reducer = handlerKeyOptions[key as string]?.reducer;
+        let returnValue: unknown = reducer?.getDefault(...args);
 
         for (const [, handler] of this.#mappedHandlers[key]) {
-          returnValue = ((handler as unknown) as AnyFunction)(...args);
-          const { handlerKeyOptions } = this.constructor;
+          const value = ((handler as unknown) as AnyFunction)(...args);
+          returnValue = reducer ? reducer.accumulator(returnValue, value, ...args) : value;
 
           // Check if the method should cause an early return, based on the
           // return value.
@@ -555,13 +525,30 @@ export type AddHandlers<Options extends ValidOptions> = (
   parameter: Partial<GetHandler<Options>>,
 ) => Dispose;
 
-export interface HandlerKeyOptions {
+export interface HandlerKeyOptions<ReturnType = any, Args extends any[] = any[]> {
   /**
    * When this value is encountered the handler will exit early.
    *
-   * Set the value to `'__IGNORE__'` to ignore it
+   * Set the value to `'__IGNORE__'` to ignore the early return value.
    */
   earlyReturnValue?: LiteralUnion<typeof IGNORE, Primitive> | ((value: unknown) => boolean);
+
+  /**
+   * Allows combining the values from the handlers together to produce a single
+   * reduced output value.
+   */
+  reducer?: {
+    /**
+     * Combine the value with the the previous value
+     */
+    accumulator: (accumulated: ReturnType, latestValue: ReturnType, ...args: Args) => ReturnType;
+
+    /**
+     * The a function that returns the default value for combined handler
+     * values. This is required for setting up a default value.
+     */
+    getDefault: (...args: Args) => ReturnType;
+  };
 }
 
 export interface BaseClass<
@@ -637,14 +624,6 @@ export interface BaseClassConstructor<
    * A list of the custom keys in the extension or preset options.
    */
   readonly customHandlerKeys: string[];
-
-  /**
-   * The instance name when instantiated.
-   *
-   * - `'CorePreset'` => `'core'`
-   * - `'AwesomeNodeExtension'` => `'awesomeNode'`
-   */
-  readonly instanceName: string;
 }
 
 export type AnyBaseClassConstructor = Replace<
@@ -664,8 +643,8 @@ export type ConstructorParameter<
   DefaultStaticOptions extends Shape
 > = IfNoRequiredProperties<
   GetStatic<Options>,
-  [(GetConstructorParameter<Options> & DefaultStaticOptions)?],
-  [GetConstructorParameter<Options> & DefaultStaticOptions]
+  [options?: GetConstructorParameter<Options> & DefaultStaticOptions],
+  [options: GetConstructorParameter<Options> & DefaultStaticOptions]
 >;
 
 /**
@@ -682,35 +661,6 @@ export type DefaultOptions<
     GetFixedDynamic<Options>,
   StringKey<GetAcceptUndefined<Options>>
 >;
-
-/**
- * Checks that the extension has a valid constructor with the `defaultOptions`
- * and `defaultProperties` defined as static properties.
- */
-export function isValidConstructor(
-  Constructor: BaseClassConstructor<any, any>,
-  code: ErrorConstant,
-): asserts Constructor {
-  invariant(isPlainObject(Constructor.defaultOptions), {
-    message: `No static 'defaultOptions' provided for '${Constructor.name}'.\n`,
-    code,
-  });
-
-  invariant(isArray(Constructor.staticKeys), {
-    message: `No static 'staticKeys' provided for '${Constructor.name}'.\n`,
-    code,
-  });
-
-  invariant(isArray(Constructor.handlerKeys), {
-    message: `No static 'handlerKeys' provided for '${Constructor.name}'.\n`,
-    code,
-  });
-
-  invariant(isArray(Constructor.customHandlerKeys), {
-    message: `No static 'customHandlerKeys' provided for '${Constructor.name}'.\n`,
-    code,
-  });
-}
 
 export interface AnyBaseClassOverrides {
   addCustomHandler: AnyFunction;

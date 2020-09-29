@@ -1,5 +1,5 @@
 import React from 'react';
-import type { EditorState, RemirrorJSON } from 'remirror/core';
+import type { EditorState, RemirrorJSON } from 'remirror';
 
 export interface PlaygroundContextObject {
   setContent: (state: Readonly<EditorState>) => void;

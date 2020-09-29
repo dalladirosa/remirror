@@ -31,7 +31,9 @@ export class HardBreakExtension extends NodeExtension {
     return 'hardBreak' as const;
   }
 
-  tags = [ExtensionTag.InlineNode];
+  createTags() {
+    return [ExtensionTag.InlineNode];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     return {

@@ -9,10 +9,9 @@ import {
   MarkExtension,
   MarkExtensionSpec,
   markInputRule,
-  markPasteRule,
-  ProsemirrorPlugin,
   toggleMark,
 } from '@remirror/core';
+import { MarkPasteRule } from '@remirror/pm/paste-rules';
 
 @extensionDecorator({})
 export class ItalicExtension extends MarkExtension {
@@ -20,7 +19,9 @@ export class ItalicExtension extends MarkExtension {
     return 'italic' as const;
   }
 
-  readonly tags = [ExtensionTag.FontStyle];
+  createTags() {
+    return [ExtensionTag.FontStyle];
+  }
 
   createMarkSpec(extra: ApplySchemaAttributes): MarkExtensionSpec {
     return {
@@ -73,10 +74,10 @@ export class ItalicExtension extends MarkExtension {
     ];
   }
 
-  createPasteRules(): ProsemirrorPlugin[] {
+  createPasteRules(): MarkPasteRule[] {
     return [
-      markPasteRule({ regexp: /_([^_]+)_/g, type: this.type }),
-      markPasteRule({ regexp: /\*([^*]+)\*/g, type: this.type }),
+      { type: 'mark', markType: this.type, regexp: /_([^_]+)_/g },
+      { type: 'mark', markType: this.type, regexp: /\*([^*]+)\*/g },
     ];
   }
 }

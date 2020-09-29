@@ -2,7 +2,7 @@ import assert from 'assert';
 import { EventEmitter } from 'events';
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { EditorState } from 'remirror/core';
+import type { EditorState } from 'remirror';
 
 import { debounce } from '@remirror/core-helpers';
 
@@ -26,16 +26,16 @@ export { useRemirrorPlayground } from './use-remirror-playground';
 function cleanse(moduleName: string, moduleExports: Exports): Exports {
   const cleansedExports = { ...moduleExports };
 
-  if (moduleName === 'remirror/extension/doc') {
+  if (moduleName === 'remirror/extensions') {
     delete cleansedExports.DocExtension;
   }
 
-  if (moduleName === 'remirror/extension/text') {
+  if (moduleName === 'remirror/extensions') {
     delete cleansedExports.TextExtension;
   }
 
   /*
-  if (moduleName === 'remirror/extension/paragraph') {
+  if (moduleName === 'remirror/extensions') {
     delete cleansedExports.ParagraphExtension;
   }
   */
@@ -106,16 +106,7 @@ export const Playground: FC = () => {
     }
   });
   const [options, setOptions] = useState({
-    extensions: [
-      // {
-      //   module: 'remirror/extensions/bold',
-      //   export: 'BoldExtension',
-      // },
-      // {
-      //   module: 'remirror/extensions/italic',
-      //   export: 'ItalicExtension',
-      // },
-    ],
+    extensions: [],
     presets: [],
   } as CodeOptions);
 

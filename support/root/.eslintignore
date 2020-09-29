@@ -28,3 +28,4 @@ support/root/pnpm-lock.yaml
 support/website/.docusaurus
 support/website/build
 
+docs/api/

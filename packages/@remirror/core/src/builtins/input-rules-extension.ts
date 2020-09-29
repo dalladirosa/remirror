@@ -1,5 +1,5 @@
 import { ExtensionPriority, ExtensionTag } from '@remirror/core-constants';
-import type { Handler } from '@remirror/core-types';
+import type { Handler, ProsemirrorPlugin } from '@remirror/core-types';
 import type { ShouldSkipFunction, SkippableInputRule } from '@remirror/core-utils';
 import { InputRule, inputRules } from '@remirror/pm/inputrules';
 import type { Plugin } from '@remirror/pm/state';
@@ -33,7 +33,7 @@ export interface InputRulesOptions {
  * @builtin
  */
 @extensionDecorator<InputRulesOptions>({
-  defaultPriority: ExtensionPriority.High,
+  defaultPriority: ExtensionPriority.Default,
   handlerKeys: ['shouldSkipInputRule'],
 
   // Return when the value `true` is encountered.
@@ -44,19 +44,21 @@ export class InputRulesExtension extends PlainExtension<InputRulesOptions> {
     return 'inputRules' as const;
   }
 
-  private inputRulesPlugin!: Plugin;
-
   /**
-   * Ensure that all ssr transformers are run.
+   * Add the extension store method for rebuilding all input rules.
    */
   onCreate(): void {
-    this.store.setExtensionStore('rebuildInputRules', this.rebuildInputRules);
-    this.loopExtensions();
-
-    this.store.addPlugins(this.inputRulesPlugin);
+    this.store.setExtensionStore('rebuildInputRules', this.rebuildInputRules.bind(this));
   }
 
-  private loopExtensions() {
+  /**
+   * Add the `inputRules` plugin to the editor.
+   */
+  createExternalPlugins(): ProsemirrorPlugin[] {
+    return [this.generateInputRulesPlugin()];
+  }
+
+  private generateInputRulesPlugin() {
     const rules: SkippableInputRule[] = [];
     const invalidMarks = this.store.markTags[ExtensionTag.ExcludeInputRules];
 
@@ -81,7 +83,7 @@ export class InputRulesExtension extends PlainExtension<InputRulesOptions> {
       }
     }
 
-    this.inputRulesPlugin = inputRules({ rules });
+    return inputRules({ rules });
   }
 
   /**
@@ -91,13 +93,9 @@ export class InputRulesExtension extends PlainExtension<InputRulesOptions> {
    * 2. Replace the old input rules plugin.
    * 3. Update the plugins used in the state (triggers an editor update).
    */
-  private readonly rebuildInputRules = () => {
-    const previousInputRules = this.inputRulesPlugin;
-
-    this.loopExtensions();
-    this.store.replacePlugin(previousInputRules, this.inputRulesPlugin);
-    this.store.reconfigureStatePlugins();
-  };
+  private rebuildInputRules() {
+    this.store.updateExtensionPlugins(this);
+  }
 }
 
 declare global {

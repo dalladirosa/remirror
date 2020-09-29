@@ -319,3 +319,11 @@ export function formatCodeBlockFactory(parameter: FormatCodeBlockFactoryParamete
     return true;
   };
 }
+
+/**
+ * Get the language from the provided `code` element. This is used as the
+ * default implementation in the `CodeExtension` but it can be overridden.
+ */
+export function getLanguageFromDom(codeElement: HTMLElement): string | undefined {
+  return codeElement.getAttribute(dataAttribute) ?? codeElement.classList[0];
+}

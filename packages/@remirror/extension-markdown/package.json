@@ -1,0 +1,48 @@
+{
+  "name": "@remirror/extension-markdown",
+  "version": "0.0.0",
+  "description": "Output markdown from your editor",
+  "keywords": [
+    "remirror",
+    "extension"
+  ],
+  "homepage": "https://github.com/remirror/remirror/tree/HEAD/support/templates/extension-markdown",
+  "repository": "https://github.com/remirror/remirror/tree/HEAD/packages/@remirror/extension-markdown",
+  "license": "MIT",
+  "contributors": [
+    "Ifiok Jr. <ifiokotung@gmail.com>"
+  ],
+  "sideEffects": false,
+  "main": "dist/extension-markdown.cjs.js",
+  "module": "dist/extension-markdown.esm.js",
+  "browser": {
+    "./dist/extension-markdown.cjs.js": "./dist/extension-markdown.browser.cjs.js",
+    "./dist/extension-markdown.esm.js": "./dist/extension-markdown.browser.esm.js"
+  },
+  "types": "dist/extension-markdown.cjs.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.11.0",
+    "@types/marked": "^1.1.0",
+    "@types/turndown": "^5.0.0",
+    "marked": "^1.2.0",
+    "turndown": "^7.0.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  },
+  "devDependencies": {
+    "@remirror/core": "1.0.0-next.49",
+    "@remirror/pm": "1.0.0-next.49"
+  },
+  "peerDependencies": {
+    "@remirror/core": "1.0.0-next.41",
+    "@remirror/pm": "1.0.0-next.40"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "meta": {
+    "sizeLimit": "5 KB"
+  }
+}

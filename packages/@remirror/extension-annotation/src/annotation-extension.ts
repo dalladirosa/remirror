@@ -1,6 +1,6 @@
 import {
   CommandFunction,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   extensionDecorator,
   ExtensionPriority,
   PlainExtension,
@@ -45,7 +45,7 @@ export class AnnotationExtension<A extends Annotation = Annotation> extends Plai
   /**
    * Create the custom code block plugin which handles the delete key amongst other things.
    */
-  createPlugin(): CreatePluginReturn<AnnotationState<A>> {
+  createPlugin(): CreateExtensionPlugin<AnnotationState<A>> {
     const pluginState = new AnnotationState<A>(this.options.getStyle);
 
     return {

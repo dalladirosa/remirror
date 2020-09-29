@@ -3,7 +3,7 @@ import type { CommandFunction } from '@remirror/core-types';
 import { nonChainable } from '@remirror/core-utils';
 
 import { ChainedFromExtensions, PlainExtension } from '..';
-import type { AnyExtension } from '../extension-base';
+import type { AnyExtension } from '../extension';
 import type { CommandsFromExtensions } from '../extension-types';
 
 class FirstExtension extends PlainExtension {

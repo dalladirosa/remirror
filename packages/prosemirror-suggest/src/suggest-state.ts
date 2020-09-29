@@ -598,7 +598,7 @@ export class SuggestState<Schema extends EditorSchema = EditorSchema> {
    *
    * @internal
    */
-  setLastChangeFromAppend() {
+  setLastChangeFromAppend(): void {
     this.#lastChangeFromAppend = true;
   }
 }

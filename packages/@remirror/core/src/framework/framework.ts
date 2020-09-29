@@ -26,12 +26,12 @@ import {
   getDocument,
   getTextSelection,
   isElementDomNode,
-  toHtml,
+  prosemirrorNodeToHtml,
 } from '@remirror/core-utils';
 
 import type { UpdatableViewProps } from '../builtins';
+import type { AnyExtension, GetSchema } from '../extension';
 import type { RemirrorManager } from '../manager';
-import type { AnyCombinedUnion, SchemaFromCombined } from '../preset/preset-types';
 import type { StateUpdateLifecycleParameter } from '../types';
 import type {
   BaseFramework,
@@ -61,10 +61,10 @@ import type {
  * There are two methods and one getter property which must be implemented for this
  */
 export abstract class Framework<
-  Combined extends AnyCombinedUnion,
-  Props extends FrameworkProps<Combined>,
-  Output extends FrameworkOutput<Combined>
-> implements BaseFramework<Combined> {
+  ExtensionUnion extends AnyExtension,
+  Props extends FrameworkProps<ExtensionUnion>,
+  Output extends FrameworkOutput<ExtensionUnion>
+> implements BaseFramework<ExtensionUnion> {
   /**
    * A unique ID for the editor which can also be used as a key in frameworks
    * that need it.
@@ -79,12 +79,12 @@ export abstract class Framework<
   /**
    * The private reference to the previous state.
    */
-  #previousState: EditorState<SchemaFromCombined<Combined>> | undefined;
+  #previousState: EditorState<GetSchema<ExtensionUnion>> | undefined;
 
   /**
    * A previous state that can be overridden by the framework implementation.
    */
-  protected previousStateOverride?: EditorState<SchemaFromCombined<Combined>>;
+  protected previousStateOverride?: EditorState<GetSchema<ExtensionUnion>>;
 
   /**
    * True when this is the first render.
@@ -100,7 +100,7 @@ export abstract class Framework<
    * - `blur`
    * - `updated`
    */
-  #events = createNanoEvents<FrameworkEvents<Combined>>();
+  #events = createNanoEvents<FrameworkEvents<ExtensionUnion>>();
 
   /**
    * The updatable view props.
@@ -109,7 +109,6 @@ export abstract class Framework<
     return {
       attributes: () => this.getAttributes(),
       editable: () => this.props.editable ?? true,
-      nodeViews: this.manager.store.nodeViews,
     };
   }
 
@@ -137,7 +136,7 @@ export abstract class Framework<
    * returning the current state. For the first render the previous state and
    * current state will always be equal.
    */
-  protected get previousState(): EditorState<SchemaFromCombined<Combined>> {
+  protected get previousState(): EditorState<GetSchema<ExtensionUnion>> {
     return this.previousStateOverride ?? this.#previousState ?? this.initialEditorState;
   }
 
@@ -145,26 +144,26 @@ export abstract class Framework<
    * Create the editor state from a `remirror` content type. This should be
    * passed in during initialization.
    */
-  private createStateFromContent: CreateStateFromContent<Combined>;
+  private createStateFromContent: CreateStateFromContent<ExtensionUnion>;
 
   /**
    * The instance of the [[`RemirrorManager`]].
    */
-  protected get manager(): RemirrorManager<Combined> {
+  protected get manager(): RemirrorManager<ExtensionUnion> {
     return this.props.manager;
   }
 
   /**
    * The ProseMirror [[`EditorView`]].
    */
-  protected get view(): EditorView<SchemaFromCombined<Combined>> {
+  protected get view(): EditorView<GetSchema<ExtensionUnion>> {
     return this.manager.view;
   }
 
   /**
    * The document to use for rendering and outputting HTML.
    */
-  protected get document(): Document {
+  get document(): Document {
     return getDocument(this.props.forceEnvironment);
   }
 
@@ -178,16 +177,16 @@ export abstract class Framework<
     return this.#uid;
   }
 
-  #initialEditorState: EditorState<SchemaFromCombined<Combined>>;
+  #initialEditorState: EditorState<GetSchema<ExtensionUnion>>;
 
   /**
    * The initial editor state from when the editor was first created.
    */
-  get initialEditorState(): EditorState<SchemaFromCombined<Combined>> {
+  get initialEditorState(): EditorState<GetSchema<ExtensionUnion>> {
     return this.#initialEditorState;
   }
 
-  constructor(parameter: FrameworkParameter<Combined, Props>) {
+  constructor(parameter: FrameworkParameter<ExtensionUnion, Props>) {
     const { getProps, createStateFromContent, initialEditorState, element } = parameter;
 
     this.#getProps = getProps;
@@ -225,7 +224,7 @@ export abstract class Framework<
    * You can call the update method with the new `props` to update the internal
    * state of this instance.
    */
-  update(parameter: FrameworkParameter<Combined, Props>): this {
+  update(parameter: FrameworkParameter<ExtensionUnion, Props>): this {
     const { getProps, createStateFromContent } = parameter;
     this.#getProps = getProps;
     this.createStateFromContent = createStateFromContent;
@@ -236,13 +235,13 @@ export abstract class Framework<
   /**
    * Retrieve the editor state.
    */
-  protected readonly getState = (): EditorState<SchemaFromCombined<Combined>> =>
+  protected readonly getState = (): EditorState<GetSchema<ExtensionUnion>> =>
     this.view.state ?? this.initialEditorState;
 
   /**
    * Retrieve the previous editor state.
    */
-  protected readonly getPreviousState = (): EditorState<SchemaFromCombined<Combined>> =>
+  protected readonly getPreviousState = (): EditorState<GetSchema<ExtensionUnion>> =>
     this.previousState;
 
   /**
@@ -250,9 +249,9 @@ export abstract class Framework<
    * an [[`EditorView`]] which is added to the [[`RemirrorManager`]].
    */
   protected abstract createView(
-    state: EditorState<SchemaFromCombined<Combined>>,
+    state: EditorState<GetSchema<ExtensionUnion>>,
     element?: Element,
-  ): EditorView<SchemaFromCombined<Combined>>;
+  ): EditorView<GetSchema<ExtensionUnion>>;
 
   /**
    * This is used to implement how the state updates are used within your
@@ -260,9 +259,7 @@ export abstract class Framework<
    *
    * It must be implemented.
    */
-  protected abstract updateState(
-    parameter: UpdateStateParameter<SchemaFromCombined<Combined>>,
-  ): void;
+  protected abstract updateState(parameter: UpdateStateParameter<GetSchema<ExtensionUnion>>): void;
 
   /**
    * Update the view props.
@@ -386,7 +383,7 @@ export abstract class Framework<
   /**
    * Use this method in the `onUpdate` event to run all change handlers.
    */
-  readonly onChange = (parameter: ListenerParameter<Combined> = object()): void => {
+  readonly onChange = (parameter: ListenerParameter<ExtensionUnion> = object()): void => {
     this.props.onChange?.(this.eventListenerParameter(parameter));
 
     if (this.#firstRender) {
@@ -442,8 +439,8 @@ export abstract class Framework<
    * The params used in the event listeners and the state listener
    */
   protected baseListenerParameter(
-    parameter: ListenerParameter<Combined>,
-  ): BaseListenerParameter<Combined> {
+    parameter: ListenerParameter<ExtensionUnion>,
+  ): BaseListenerParameter<ExtensionUnion> {
     const { state, tr } = parameter;
 
     return {
@@ -462,8 +459,8 @@ export abstract class Framework<
    * `onChange`
    */
   protected eventListenerParameter(
-    parameter: ListenerParameter<Combined> = object(),
-  ): RemirrorEventListenerParameter<Combined> {
+    parameter: ListenerParameter<ExtensionUnion> = object(),
+  ): RemirrorEventListenerParameter<ExtensionUnion> {
     const { state, tr } = parameter;
 
     return {
@@ -557,26 +554,25 @@ export abstract class Framework<
    * Methods and properties which are made available to all consumers of the
    * `Framework` class.
    */
-  protected get baseOutput(): FrameworkOutput<Combined> {
+  protected get baseOutput(): FrameworkOutput<ExtensionUnion> {
     return {
       ...this.manager.store,
       addHandler: this.#events.on.bind(this.#events),
 
-      /* Properties */
+      // /* Properties */
       uid: this.#uid,
       view: this.view,
 
-      /* Getter Methods */
+      // /* Getter Methods */
       getState: this.getState,
       getPreviousState: this.getPreviousState,
       getExtension: this.manager.getExtension.bind(this.manager),
-      getPreset: this.manager.getPreset.bind(this.manager),
 
-      /* Setter Methods */
+      // /* Setter Methods */
       clearContent: this.clearContent,
       setContent: this.setContent,
 
-      /* Helper Methods */
+      // /* Helper Methods */
       focus: this.focus,
       blur: this.blur,
     };
@@ -592,7 +588,7 @@ export abstract class Framework<
    * content in your editor, it is not guaranteed to preserve it 100%, so it's
    * best to test that it meets your needs before consuming.
    */
-  private readonly getText = (state?: EditorState<SchemaFromCombined<Combined>>) => (
+  private readonly getText = (state?: EditorState<GetSchema<ExtensionUnion>>) => (
     lineBreakDivider = '\n\n',
   ) => {
     const { doc } = state ?? this.getState();
@@ -604,8 +600,8 @@ export abstract class Framework<
    *
    * This assumes a dom environment.
    */
-  private readonly getHTML = (state?: EditorState<SchemaFromCombined<Combined>>) => () => {
-    return toHtml({
+  private readonly getHTML = (state?: EditorState<GetSchema<ExtensionUnion>>) => () => {
+    return prosemirrorNodeToHtml({
       node: (state ?? this.getState()).doc,
       schema: this.manager.store.schema,
       document: this.document,
@@ -615,9 +611,7 @@ export abstract class Framework<
   /**
    * Retrieve the full state json object
    */
-  private readonly getJSON = (
-    state?: EditorState<SchemaFromCombined<Combined>>,
-  ) => (): StateJSON => {
+  private readonly getJSON = (state?: EditorState<GetSchema<ExtensionUnion>>) => (): StateJSON => {
     return (state ?? this.getState()).toJSON() as StateJSON;
   };
 
@@ -625,7 +619,7 @@ export abstract class Framework<
    * Return the json object for the prosemirror document.
    */
   private readonly getRemirrorJSON = (
-    state?: EditorState<SchemaFromCombined<Combined>>,
+    state?: EditorState<GetSchema<ExtensionUnion>>,
   ) => (): RemirrorJSON => {
     return (state ?? this.getState()).doc.toJSON() as RemirrorJSON;
   };

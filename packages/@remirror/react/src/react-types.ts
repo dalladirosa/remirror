@@ -1,15 +1,11 @@
 import type { ReactNode, Ref } from 'react';
 
 import type {
-  AnyCombinedUnion,
   AnyExtension,
   BuiltinPreset,
-  EditorState,
   FrameworkOutput,
-  FrameworkProps,
   GetStaticAndDynamic,
-  RemirrorManager,
-  SchemaFromCombined,
+  RemirrorEventListener,
   Shape,
 } from '@remirror/core';
 import type { PortalContainer } from '@remirror/extension-react-component';
@@ -17,79 +13,16 @@ import type { I18n } from '@remirror/i18n';
 import type { CorePreset, CreateCoreManagerOptions } from '@remirror/preset-core';
 import type { ReactPreset, ReactPresetOptions } from '@remirror/preset-react';
 
-export type DefaultReactCombined = ReactCombinedUnion<AnyExtension>;
+export type DefaultReactExtensionUnion = ReactExtensionUnion<AnyExtension>;
 
 /**
- * Use this to build your own combined union type.
+ * Use this to build your own extension union type which extends from the `ReactExtensionUnion`.
  */
-export type ReactCombinedUnion<Combined extends AnyCombinedUnion> =
+export type ReactExtensionUnion<ExtensionUnion extends AnyExtension> =
   | CorePreset
   | ReactPreset
   | BuiltinPreset
-  | Combined;
-
-export interface BaseProps<Combined extends AnyCombinedUnion> extends FrameworkProps<Combined> {
-  /**
-   * Pass in the extension manager.
-   *
-   * The manager is responsible for handling all Prosemirror related
-   * functionality.
-   *
-   * TODO - why does this only work as `any`.
-   */
-  manager: RemirrorManager<any>;
-
-  /**
-   * When onStateChange is defined this prop is used to set the next state value
-   * of the remirror editor.
-   *
-   * @remarks
-   *
-   * If this exists the editor becomes a controlled component. Nothing will be
-   * updated unless you explicitly set the value prop to the updated state.
-   *
-   * Without a deep understanding of Prosemirror this is not recommended.
-   */
-  value?: EditorState<SchemaFromCombined<Combined>> | null;
-
-  /**
-   * Set to true to ignore the hydration warning for a mismatch between the
-   * rendered server and client content.
-   *
-   * @remarks
-   *
-   * This is a potential solution for those who require server side rendering.
-   *
-   * While on the server the prosemirror document is transformed into a react
-   * component so that it can be rendered. The moment it enters the DOM
-   * environment prosemirror takes over control of the root element. The problem
-   * is that this will always see this hydration warning on the client:
-   *
-   * `Warning: Did not expect server HTML to contain a <div> in <div>.`
-   *
-   * Setting this to true removes the warning at the cost of a slightly slower
-   * start up time. It uses the two pass solution mentioned in the react docs.
-   * See {@link https://reactjs.org/docs/react-dom.html#hydrate}.
-   *
-   * For ease of use this prop copies the name used by react for DOM Elements.
-   * See {@link
-   * https://reactjs.org/docs/dom-elements.html#suppresshydrationwarning.
-   */
-  suppressHydrationWarning?: boolean;
-
-  /**
-   * Determine whether the Prosemirror view is inserted at the `start` or `end`
-   * of it's container DOM element.
-   *
-   * @default 'end'
-   */
-  insertPosition?: 'start' | 'end';
-
-  /**
-   * The placeholder to set for the editor.
-   */
-  placeholder?: string;
-}
+  | ExtensionUnion;
 
 /**
  * The config options for the `getRootProps` method.
@@ -166,15 +99,16 @@ export interface I18nContextProps {
  * These are the props passed to the render function provided when setting up
  * your editor.
  */
-export interface ReactFrameworkOutput<Combined extends AnyCombinedUnion>
-  extends FrameworkOutput<Combined> {
+export interface ReactFrameworkOutput<ExtensionUnion extends AnyExtension>
+  extends FrameworkOutput<ExtensionUnion> {
   /**
-   * A function that returns props which should be spread on a react element and
-   * declare it as the editor root (where the editor is injected in the DOM).
+   * A function that returns the props which should be spread on the react
+   * element to be used as the root for the editor. This is where the
+   * ProseMirror editor is injected into the DOM).
    *
    * @remarks
    *
-   * By default remirror will add the prosemirror editor instance directly into
+   * By default `Remirror` will add the prosemirror editor instance directly into
    * the first child element it receives. Using this method gives you full
    * control over where the editor should be injected.
    *
@@ -184,7 +118,7 @@ export interface ReactFrameworkOutput<Combined extends AnyCombinedUnion>
    * **Example with indirectly nested components**
    *
    * ```tsx
-   * import { RemirrorProvider } from '@remirror/react';
+   * import { Remirror } from '@remirror/react';
    * import { PresetCore } from '@remirror/preset-core';
    * import { BoldExtension } from '@remirror/extension-bold';
    *
@@ -199,9 +133,9 @@ export interface ReactFrameworkOutput<Combined extends AnyCombinedUnion>
    *   const manager = useManager([corePreset, boldExtension]);
    *
    *   return (
-   *     <RemirrorProvider manager={manager}>
+   *     <Remirror manager={manager}>
    *       <InnerEditor />
-   *     </RemirrorProvider>
+   *     </Remirror>
    *   );
    * }
    * ```
@@ -232,3 +166,28 @@ export interface CreateReactManagerOptions extends CreateCoreManagerOptions {
    */
   react?: GetStaticAndDynamic<ReactPresetOptions>;
 }
+
+/**
+ * This is a type alias for creating your own typed version of the remirror
+ * method.
+ *
+ * ```ts
+ * import { useRemirror, UseRemirrorContextType } from 'remirror/react';
+ * import { SocialPreset } from 'remirror/extensions'
+ *
+ * const useSocialRemirror = useRemirror as UseRemirrorContextType<SocialPreset>;
+ *
+ * // With the remirror provider context.
+ * const Editor = () => {
+ *   const { commands } = useSocialRemirror();
+ *
+ *   // All available commands are shown with intellisense. Command click to goto the implementation.
+ *   commands.toggleBold();
+ * }
+ * ```
+ */
+export type UseRemirrorContextType<ExtensionUnion extends AnyExtension> = <
+  Type extends AnyExtension
+>(
+  handler?: RemirrorEventListener<ExtensionUnion> | { autoUpdate: boolean },
+) => ReactFrameworkOutput<ExtensionUnion | Type>;

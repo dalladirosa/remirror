@@ -1,7 +1,7 @@
 import {
   ApplySchemaAttributes,
   Cast,
-  CreatePluginReturn,
+  CreateExtensionPlugin,
   EditorState,
   EditorStateParameter,
   EditorView,
@@ -16,13 +16,12 @@ import {
   markEqualsType,
   MarkExtension,
   MarkExtensionSpec,
-  markPasteRule,
   MarkType,
   MarkTypeParameter,
-  ProsemirrorPlugin,
   Static,
   TransactionParameter,
 } from '@remirror/core';
+import { MarkPasteRule } from '@remirror/pm/paste-rules';
 import { TextSelection } from '@remirror/pm/state';
 import { ReplaceStep } from '@remirror/pm/transform';
 
@@ -81,21 +80,18 @@ export class AutoLinkExtension extends MarkExtension<AutoLinkOptions> {
     };
   }
 
-  createPasteRules(): ProsemirrorPlugin[] {
-    return [
-      markPasteRule({
-        regexp: this.options.urlRegex,
-        type: this.type,
-        getAttributes: (url) => {
-          return {
-            href: extractHref(getMatchString(url), this.options.defaultProtocol),
-          };
-        },
+  createPasteRules(): MarkPasteRule {
+    return {
+      regexp: this.options.urlRegex,
+      type: 'mark',
+      markType: this.type,
+      getAttributes: (url) => ({
+        href: extractHref(getMatchString(url), this.options.defaultProtocol),
       }),
-    ];
+    };
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       state: {
         init: () => {

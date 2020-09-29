@@ -1,9 +1,14 @@
 import type { UnionToIntersection } from 'type-fest';
 
-import type { AnyFunction, NonChainableCommandFunction, StringKey } from '@remirror/core-types';
+import type {
+  AnyFunction,
+  NonChainableCommandFunction,
+  ProsemirrorAttributes,
+  StringKey,
+} from '@remirror/core-types';
 
 import type { CommandShape, GetCommands, GetHelpers } from '../types';
-import type { AnyExtension } from './extension-base';
+import type { AnyExtension, GetMarkNameUnion, GetNodeNameUnion } from './extension';
 
 export interface ExtensionListParameter<ExtensionUnion extends AnyExtension = AnyExtension> {
   /**
@@ -80,7 +85,7 @@ export type ChainedFromExtensions<
  * Utility type for pulling all the command names from a list
  */
 export type CommandNames<ExtensionUnion extends AnyExtension> = StringKey<
-  CommandsFromExtensions<ExtensionUnion>
+  CommandsFromExtensions<GetExtensions<ExtensionUnion>>
 >;
 
 /**
@@ -95,17 +100,34 @@ export type MapHelpers<RawHelpers extends Record<string, AnyFunction>> = {
  * Utility type which receives an extension and provides the type of helpers it makes available.
  */
 export type HelpersFromExtensions<ExtensionUnion extends AnyExtension> = UnionToIntersection<
-  MapHelpers<GetHelpers<ExtensionUnion>>
+  MapHelpers<GetHelpers<GetExtensions<ExtensionUnion>>>
 >;
 
 /**
  * Utility type for pulling all the action names from a list
  */
 export type HelperNames<ExtensionUnion extends AnyExtension> = StringKey<
-  HelpersFromExtensions<ExtensionUnion>
+  HelpersFromExtensions<GetExtensions<ExtensionUnion>>
 >;
 
 /**
- * Get the extensions from any type with an `extensions` property.
+ * Get the extension and it's nested .
+ *
+ * TODO when upgrading to `ts@4.1` use Recursive conditional types instead.
+ * https://github.com/microsoft/TypeScript/pull/40002
  */
-export type GetExtensionUnion<Type extends ExtensionListParameter> = Type['extensions'][number];
+export type GetExtensions<ExtensionUnion extends AnyExtension> =
+  | ExtensionUnion
+  | ExtensionUnion['~E']
+  | ExtensionUnion['~E']['~E']
+  | ExtensionUnion['~E']['~E']['~E']
+  | ExtensionUnion['~E']['~E']['~E']['~E'];
+
+/**
+ * The type which gets the active methods from the provided extensions.
+ */
+export type ActiveFromExtensions<ExtensionUnion extends AnyExtension> = Record<
+  GetNodeNameUnion<GetExtensions<ExtensionUnion>>,
+  (attributes?: ProsemirrorAttributes) => boolean
+> &
+  Record<GetMarkNameUnion<GetExtensions<ExtensionUnion>>, () => boolean>;

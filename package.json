@@ -6,11 +6,14 @@
   "scripts": {
     "audit": "pnpm audit --audit-level high",
     "browser:coverage": "browserslist --coverage",
-    "build": "preconstruct build",
+    "build": "run-p build:core build:svelte",
     "postbuild": "run-s css:copy",
+    "build:core": "preconstruct build",
     "build:custom": "pnpm recursive run build:custom",
     "build:dev": "preconstruct dev",
-    "build:docs": "cd support/website && pnpm build && cp ./_redirects ./build/_redirects",
+    "build:docs": "run-s docs:sidebar docs:prod docs:redirects",
+    "build:storybook": "manypkg run support/storybook build:storybook",
+    "build:svelte": "manypkg run packages/@remirror/svelte build",
     "changeset": "changeset",
     "check:pnpm": "node support/scripts/check-pnpm.js",
     "checks": "run-s audit lint typecheck test",
@@ -23,10 +26,15 @@
     "clean:all": "git clean -fdX --exclude='.config.json'",
     "clean:modules": "git clean -fdX packages support",
     "clean:tsconfig": "rimraf packages/**/tsconfig.json",
+    "create:package": "node packages/@remirror/cli/bin.js create",
     "css:copy": "cpy packages/@remirror/styles/*.css packages/remirror/styles/",
     "css:force": "node support/scripts/check-styles.js --force",
     "dev": "preconstruct watch",
-    "docs": "cd support/website && pnpm start",
+    "docs": "pnpm run docs:dev",
+    "docs:dev": "cd support/website && pnpm start",
+    "docs:prod": "cd support/website && pnpm build",
+    "docs:redirects": "cpy ./support/website/_redirects ./support/website/build/_redirects",
+    "docs:sidebar": "node support/scripts/create-typedoc-sidebars.js",
     "fix": "cross-env TS=true run-s -c fix:*",
     "fix:build": "preconstruct fix",
     "fix:css": "node support/scripts/check-styles.js --fix",
@@ -35,6 +43,7 @@
     "fix:prettier": "pnpm run:prettier -- --write",
     "fix:repo": "manypkg fix",
     "generate:config": "node support/scripts/generate-configs.js",
+    "generate:icons": "pnpm ts support/scripts/generate-icons.ts",
     "generate:ts": "node support/scripts/generate-configs.js --ts-packages",
     "generate:ts:experimental": "node support/scripts/generate-configs.js --ts-packages",
     "if-clean": "node support/scripts/run-if-clean.js",
@@ -42,7 +51,7 @@
     "if-not-ci": "node support/scripts/run-if-not-ci.js",
     "if-publishable": "node support/scripts/run-if-publishable.js",
     "preinstall": "pnpm symlink:root && pnpm check:pnpm",
-    "postinstall": "run-s build:dev css:copy",
+    "postinstall": "run-p build:dev css:copy",
     "intl": "run-s intl:extract intl:compile intl:build",
     "intl:build": "node packages/@remirror/i18n/build-declaration.js",
     "intl:compile": "lingui compile",
@@ -64,7 +73,7 @@
     "reset": "pnpm clean:all; rm pnpm-lock.yaml; pnpm symlink:root; pnpm install;",
     "run:prettier": "prettier --loglevel warn --ignore-path .eslintignore \"**/*.{js,jsx,ts,tsx,md,mdx,json,html,css,yml,yaml,graphql}\"",
     "size": "size-limit",
-    "storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' manypkg run support/storybook storybook",
+    "storybook": "manypkg run support/storybook storybook",
     "symlink:root": "node support/scripts/symlink-root.js",
     "test": "jest --verbose",
     "test:build": "cross-env TEST_BUILD=true jest --verbose --coverage=false",
@@ -73,7 +82,7 @@
     "ts": "ts-node -P support/tsconfig.base.json -O '{\"module\":\"commonjs\"}' --transpile-only",
     "typecheck": "tsc -b ./tsconfig.references.json",
     "update:deps": "pnpm update --latest --recursive -i",
-    "update:workspace": "pnpm up -r --workspace \"@remirror/*\"",
+    "update:workspace": "pnpm up -r --workspace \"@remirror/*\" remirror multishift jest-remirror jest-prosemirror prosemirror-suggest a11y-status test-keyboard",
     "preversion:changeset": "node support/scripts/changeset-forced-update.js",
     "version:changeset": "changeset version",
     "postversion:changeset": "node support/scripts/changeset-forced-update.js --clean",
@@ -182,7 +191,8 @@
   "preconstruct": {
     "packages": [
       "packages/*",
-      "packages/@remirror/*"
+      "packages/@remirror/*",
+      "!packages/@remirror/svelte"
     ]
   }
 }

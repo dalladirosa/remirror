@@ -1,10 +1,11 @@
 import { ErrorConstant, ExtensionPriority } from '@remirror/core-constants';
 import { entries, object } from '@remirror/core-helpers';
-import type { AnyFunction, EmptyShape, ProsemirrorAttributes, Value } from '@remirror/core-types';
+import type { AnyFunction, EmptyShape, ProsemirrorAttributes } from '@remirror/core-types';
 import { isMarkActive, isNodeActive, isSelectionEmpty } from '@remirror/core-utils';
 
 import { extensionDecorator } from '../decorators';
 import {
+  ActiveFromExtensions,
   AnyExtension,
   HelpersFromExtensions,
   isMarkExtension,
@@ -12,7 +13,6 @@ import {
   PlainExtension,
 } from '../extension';
 import { throwIfNameNotUnique } from '../helpers';
-import type { ActiveFromCombined, AnyCombinedUnion, HelpersFromCombined } from '../preset';
 import type { ExtensionHelperReturn } from '../types';
 
 /**
@@ -85,11 +85,11 @@ export class HelpersExtension extends PlainExtension {
 
 declare global {
   namespace Remirror {
-    interface ManagerStore<Combined extends AnyCombinedUnion> {
+    interface ManagerStore<ExtensionUnion extends AnyExtension> {
       /**
        * The helpers provided by the extensions used.
        */
-      helpers: HelpersFromCombined<Combined | Value<AllExtensions>>;
+      helpers: HelpersFromExtensions<ExtensionUnion>;
 
       /**
        * Check which nodes and marks are active under the current user
@@ -101,7 +101,7 @@ declare global {
        * return active.bold() ? 'bold' : 'regular';
        * ```
        */
-      active: ActiveFromCombined<Combined>;
+      active: ActiveFromExtensions<ExtensionUnion>;
     }
 
     interface ExtensionCreatorMethods {
@@ -110,7 +110,8 @@ declare global {
        *
        * This pseudo property makes it easier to infer Generic types of this
        * class.
-       * @private
+       *
+       * @internal
        */
       ['~H']: this['createHelpers'] extends AnyFunction
         ? ReturnType<this['createHelpers']>
@@ -142,10 +143,10 @@ declare global {
        *
        * ```
        * // app.tsx
-       * import { useRemirror } from '@remirror/react';
+       * import { useRemirrorContext } from 'remirror/react';
        *
        * const MyEditor = () => {
-       *   const { helpers } = useRemirror({ autoUpdate: true });
+       *   const { helpers } = useRemirrorContext({ autoUpdate: true });
        *
        *   return helpers.beautiful.checkBeautyLevel() > 50
        *     ? (<span>😍</span>)

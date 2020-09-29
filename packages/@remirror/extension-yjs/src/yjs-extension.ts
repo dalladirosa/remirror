@@ -203,11 +203,7 @@ export class YjsExtension extends PlainExtension<YjsOptions> {
     ]);
 
     if (!isEmptyObject(changedPluginOptions)) {
-      const previousPlugins = this.externalPlugins;
-      const newPlugins = (this.externalPlugins = this.createExternalPlugins());
-
-      this.store.addOrReplacePlugins(newPlugins, previousPlugins);
-      this.store.reconfigureStatePlugins();
+      this.store.updateExtensionPlugins(this);
     }
 
     if (changes.getProvider.changed) {

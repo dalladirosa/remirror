@@ -109,7 +109,9 @@ export class MentionAtomExtension extends NodeExtension<MentionAtomOptions> {
     return 'mentionAtom' as const;
   }
 
-  readonly tags = [ExtensionTag.InlineNode, ExtensionTag.Behavior];
+  createTags() {
+    return [ExtensionTag.InlineNode, ExtensionTag.Behavior];
+  }
 
   createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
     const dataAttributeId = 'data-mention-atom-id';

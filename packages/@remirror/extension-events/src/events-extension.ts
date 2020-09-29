@@ -1,4 +1,4 @@
-import { CreatePluginReturn, extensionDecorator, Handler, PlainExtension } from '@remirror/core';
+import { CreateExtensionPlugin, extensionDecorator, Handler, PlainExtension } from '@remirror/core';
 
 export interface EventsOptions {
   /**
@@ -50,7 +50,7 @@ export class EventsExtension extends PlainExtension<EventsOptions> {
     return 'events' as const;
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin(): CreateExtensionPlugin {
     return {
       props: {
         handleDOMEvents: {

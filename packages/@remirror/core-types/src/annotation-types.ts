@@ -31,7 +31,7 @@ export type RemoveAnnotation<Type> = RemoveFlavoring<Type>;
  * instantiation.
  *
  * ```ts
- * import { Static, PlainExtension } from 'remirror/core';
+ * import { Static, PlainExtension } from 'remirror';
  *
  * interface MyExtensionOptions {
  *   content: Static<string>;
@@ -64,7 +64,7 @@ export type Static<Type> = Type & StaticAnnotation;
  * This is the default type assumed and it can be left unused.
  *
  * ```ts
- * import { Dynamic, PlainExtension } from 'remirror/core';
+ * import { Dynamic, PlainExtension } from 'remirror';
  *
  * interface MyExtensionOptions {
  *   isSwitchedOn: Dynamic<boolean>;
@@ -106,7 +106,7 @@ export type AcceptUndefined<Type> = Type & AcceptUndefinedAnnotation;
  * created to automate this.
  *
  * ```ts
- * import { PlainExtension, extensionDecorator } from 'remirror/core';
+ * import { PlainExtension, extensionDecorator } from 'remirror';
  * interface CustomOptions {
  *   simple: boolean; // Automatically a dynamic property
  *   onChange: Handler<(value: string) => void>;

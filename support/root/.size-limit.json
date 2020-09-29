@@ -24,7 +24,7 @@
     "name": "@remirror/core-utils",
     "path": "packages/@remirror/core-utils/dist/core-utils.browser.esm.js",
     "limit": "20 KB",
-    "ignore": ["@remirror/pm"],
+    "ignore": ["@remirror/pm", "@types/node"],
     "running": false
   },
   {
@@ -112,6 +112,13 @@
     "running": false
   },
   {
+    "name": "@remirror/extension-embed",
+    "path": "packages/@remirror/extension-embed/dist/extension-embed.browser.esm.js",
+    "limit": "10 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
     "name": "@remirror/extension-emoji",
     "path": "packages/@remirror/extension-emoji/dist/extension-emoji.browser.esm.js",
     "limit": "60 KB",
@@ -189,8 +196,29 @@
     "running": false
   },
   {
+    "name": "@remirror/extension-list",
+    "path": "packages/@remirror/extension-list/dist/extension-list.browser.esm.js",
+    "limit": "10 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
+    "name": "@remirror/extension-markdown",
+    "path": "packages/@remirror/extension-markdown/dist/extension-markdown.browser.esm.js",
+    "limit": "5 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
     "name": "@remirror/extension-mention",
     "path": "packages/@remirror/extension-mention/dist/extension-mention.browser.esm.js",
+    "limit": "5 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
+    "name": "@remirror/extension-mention-atom",
+    "path": "packages/@remirror/extension-mention-atom/dist/extension-mention-atom.browser.esm.js",
     "limit": "5 KB",
     "ignore": ["@remirror/core", "@remirror/pm"],
     "running": false
@@ -252,6 +280,13 @@
     "running": false
   },
   {
+    "name": "@remirror/extension-tables",
+    "path": "packages/@remirror/extension-tables/dist/extension-tables.browser.esm.js",
+    "limit": "10 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
     "name": "@remirror/extension-text",
     "path": "packages/@remirror/extension-text/dist/extension-text.browser.esm.js",
     "limit": "5 KB",
@@ -294,20 +329,6 @@
     "running": false
   },
   {
-    "name": "@remirror/preset-embed",
-    "path": "packages/@remirror/preset-embed/dist/preset-embed.browser.esm.js",
-    "limit": "10 KB",
-    "ignore": ["@remirror/core", "@remirror/pm"],
-    "running": false
-  },
-  {
-    "name": "@remirror/preset-list",
-    "path": "packages/@remirror/preset-list/dist/preset-list.browser.esm.js",
-    "limit": "10 KB",
-    "ignore": ["@remirror/core", "@remirror/pm"],
-    "running": false
-  },
-  {
     "name": "@remirror/preset-react",
     "path": "packages/@remirror/preset-react/dist/preset-react.browser.esm.js",
     "limit": "20 KB",
@@ -322,23 +343,9 @@
     "running": false
   },
   {
-    "name": "@remirror/preset-react-checkbox",
-    "path": "packages/@remirror/preset-react-checkbox/dist/preset-react-checkbox.browser.esm.js",
-    "limit": "10 KB",
-    "ignore": ["@remirror/core", "@remirror/pm"],
-    "running": false
-  },
-  {
     "name": "@remirror/preset-social",
     "path": "packages/@remirror/preset-social/dist/preset-social.browser.esm.js",
     "limit": "80 KB",
-    "ignore": ["@remirror/core", "@remirror/pm"],
-    "running": false
-  },
-  {
-    "name": "@remirror/preset-table",
-    "path": "packages/@remirror/preset-table/dist/preset-table.browser.esm.js",
-    "limit": "10 KB",
     "ignore": ["@remirror/core", "@remirror/pm"],
     "running": false
   },
@@ -384,23 +391,12 @@
     "limit": "200 KB",
     "ignore": [
       "@remirror/core",
-      "@remirror/extension-auto-link",
+      "@remirror/extension-emoji",
+      "@remirror/extension-events",
+      "@remirror/extension-history",
       "@remirror/extension-mention",
-      "@remirror/pm",
-      "@remirror/react",
-      "@types/react",
-      "@types/react-dom",
-      "react",
-      "react-dom"
-    ],
-    "running": false
-  },
-  {
-    "name": "@remirror/react-social",
-    "path": "packages/@remirror/react-social/dist/react-social.browser.esm.js",
-    "limit": "200 KB",
-    "ignore": [
-      "@remirror/core",
+      "@remirror/extension-mention-atom",
+      "@remirror/extension-positioner",
       "@remirror/pm",
       "@remirror/react",
       "@types/react",
@@ -415,21 +411,6 @@
     "path": "packages/@remirror/react-utils/dist/react-utils.browser.esm.js",
     "limit": "5 KB",
     "ignore": ["@types/react", "react"],
-    "running": false
-  },
-  {
-    "name": "@remirror/react-wysiwyg",
-    "path": "packages/@remirror/react-wysiwyg/dist/react-wysiwyg.browser.esm.js",
-    "limit": "200 KB",
-    "ignore": [
-      "@remirror/core",
-      "@remirror/pm",
-      "@remirror/react",
-      "@types/react",
-      "@types/react-dom",
-      "react",
-      "react-dom"
-    ],
     "running": false
   },
   {
@@ -458,10 +439,10 @@
     "path": "packages/prosemirror-suggest/dist/prosemirror-suggest.browser.esm.js",
     "limit": "10 KB",
     "ignore": [
-      "@types/prosemirror-keymap",
+      "@types/prosemirror-model",
       "@types/prosemirror-state",
       "@types/prosemirror-view",
-      "prosemirror-keymap",
+      "prosemirror-model",
       "prosemirror-state",
       "prosemirror-view"
     ],
@@ -472,6 +453,27 @@
     "path": "packages/test-keyboard/dist/test-keyboard.browser.esm.js",
     "limit": "10 KB",
     "ignore": [],
+    "running": false
+  },
+  {
+    "name": "@remirror/extension-template",
+    "path": "support/templates/extension-template/dist/extension-template.esm.js",
+    "limit": "5 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
+    "running": false
+  },
+  {
+    "name": "@remirror/minimal-template",
+    "path": "support/templates/minimal-template/dist/minimal-template.esm.js",
+    "limit": "50 KB",
+    "ignore": [],
+    "running": false
+  },
+  {
+    "name": "@remirror/preset-template",
+    "path": "support/templates/preset-template/dist/preset-template.esm.js",
+    "limit": "10 KB",
+    "ignore": ["@remirror/core", "@remirror/pm"],
     "running": false
   }
 ]

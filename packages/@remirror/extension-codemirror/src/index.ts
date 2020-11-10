@@ -1,1 +1,1 @@
-export {CodeMirrorOptions } from "./codemirror-types"
+export type { CodeMirrorOptions } from './codemirror-types';

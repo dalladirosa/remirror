@@ -1,7 +1,15 @@
 import { pmBuild } from 'jest-prosemirror';
 import { extensionValidityTest, renderEditor } from 'jest-remirror';
 
-import { fromHtml, toHtml } from '@remirror/core';
+import {
+  ApplySchemaAttributes,
+  extensionDecorator,
+  ExtensionTag,
+  fromHtml,
+  NodeExtension,
+  NodeExtensionSpec,
+  toHtml,
+} from '@remirror/core';
 import { createCoreManager } from '@remirror/testing';
 
 import { LinkExtension, LinkOptions } from '..';
@@ -318,6 +326,46 @@ describe('commands', () => {
 
         expect(commands.updateLink.isEnabled({ href: '' })).toBeFalse();
       });
+
+      it('is not enabled for nodes that are not applicable', () => {
+        @extensionDecorator({ disableExtraAttributes: true })
+        class NoMarksExtension extends NodeExtension {
+          get name() {
+            return 'noMarks';
+          }
+
+          tags = [ExtensionTag.BlockNode];
+
+          createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
+            return {
+              content: 'inline*',
+              marks: '',
+              parseDOM: [
+                {
+                  tag: 'div',
+                  getAttrs: (node) => ({
+                    ...extra.parse(node),
+                  }),
+                },
+              ],
+
+              toDOM: (node) => {
+                return ['div', extra.dom(node), 0];
+              },
+            };
+          }
+        }
+
+        const {
+          add,
+          nodes: { doc, noMarks },
+          commands,
+        } = renderEditor([new LinkExtension(), new NoMarksExtension()]);
+
+        add(doc(noMarks('No marks <start>A<end> link')));
+
+        expect(commands.updateLink.isEnabled({ href: '' })).toBeFalse();
+      });
     });
   });
 
@@ -408,12 +456,12 @@ describe('plugin', () => {
     } = create({ openLinkOnClick: true });
     const testLink = link({ href });
 
-    global.open = jest.fn();
+    jest.spyOn(global, 'open').mockImplementation();
 
     add(doc(p(testLink('Li<cursor>nk'))))
       .fire({ event: 'click' })
       .callback(() => {
-        expect(global.open).toBeCalled();
+        expect(global.open).toHaveBeenCalled();
       });
   });
 });

@@ -1,4 +1,14 @@
-import { atomInline, blockquote, createEditor, doc, h1, p, schema, strong } from 'jest-prosemirror';
+import {
+  atomInline,
+  blockquote,
+  codeBlock,
+  createEditor,
+  doc,
+  h1,
+  p,
+  schema,
+  strong,
+} from 'jest-prosemirror';
 
 import { removeMark, replaceText, toggleBlockItem, toggleWrap, updateMark } from '../command-utils';
 
@@ -35,6 +45,23 @@ describe('removeMark', () => {
       from,
       to,
     });
+  });
+
+  it('does not mutate the provided transaction', () => {
+    const from = doc(p('start ', strong('bo<cursor>ld'), ' and not'));
+    const editor = createEditor(from);
+    const tr = editor.state.tr;
+    const view = editor.view;
+
+    removeMark({ type })({ state: editor.state, tr, view });
+    removeMark({ type })({ state: editor.state, tr, view });
+
+    // Make sure that no steps have been added when dispatch is not enabled.
+    expect(tr.steps).toHaveLength(0);
+
+    // Dispatch the transaction to make sure nothing has changed.
+    view.dispatch(tr);
+    expect(editor.view.state.doc).toEqualProsemirrorNode(from);
   });
 });
 
@@ -97,11 +124,36 @@ describe('replaceText', () => {
   });
 });
 
-test('updateMark', () => {
-  const from = doc(p('Make <start>bold<end>'));
-  const to = doc(p('Make ', strong('bold')));
+describe('updateMark', () => {
+  const type = schema.marks.strong;
 
-  expect(updateMark({ type: schema.marks.strong })).toTransform({ from, to });
+  it('adds the mark to the selection', () => {
+    const from = doc(p('Make <start>bold<end>'));
+    const to = doc(p('Make ', strong('bold')));
+
+    expect(updateMark({ type })).toTransform({ from, to });
+  });
+
+  it('does not add the mark if it is not applicable', () => {
+    const from = doc(codeBlock('Not <start>bold<end> in code block'));
+    const to = doc(codeBlock('Not bold in code block'));
+
+    expect(updateMark({ type })).toTransform({ from, to });
+  });
+
+  it('adds the mark to a custom range', () => {
+    const from = doc(p('Make bold with range<cursor>'));
+    const to = doc(p('Make ', strong('bold'), ' with range'));
+
+    expect(updateMark({ type, range: { from: 6, to: 10 } })).toTransform({ from, to });
+  });
+
+  it('does not add the mark to a custom range if it is not applicable', () => {
+    const from = doc(codeBlock('Not bold in code block<cursor>'));
+    const to = doc(codeBlock('Not bold in code block'));
+
+    expect(updateMark({ type, range: { from: 5, to: 9 } })).toTransform({ from, to });
+  });
 });
 
 describe('toggleWrap', () => {
